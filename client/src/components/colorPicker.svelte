@@ -5,7 +5,7 @@
   export let colors;
   export let enableOpacity;
 
-  const width = 286;
+  const width = 384;
   const height = 286;
 
   const area = {
