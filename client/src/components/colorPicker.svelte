@@ -1,10 +1,12 @@
 <script>
   import { onMount } from 'svelte';
+  import Color from './color.svelte';
   
   export let colors;
+  export let enableOpacity;
 
-  const width = 300;
-  const height = 300;
+  const width = 286;
+  const height = 286;
 
   const area = {
     x: 16,
@@ -112,20 +114,12 @@
         && pointer.y <= y + height
       ) {
         const imageData = ctx.getImageData(pointer.x, pointer.y, 1, 1).data;
-        if (i === 0) {
-          colors.setColor([
-            imageData[0],
-            imageData[1],
-            imageData[2],
-            $colors.current[3]
-          ]);
-        } else {
-          colors.setArea([
-            imageData[0],
-            imageData[1],
-            imageData[2]
-          ]);
-        }
+        colors.setColor([
+          imageData[0],
+          imageData[1],
+          imageData[2],
+          $colors.current[3]
+        ], i === 1);
         break;
       }
     }
@@ -137,23 +131,25 @@
   const onMouseUp = () => {
     isPicking = false;
   };
+
+  $: current = enableOpacity ? $colors.current : [...$colors.current.slice(0, 3), 0xFF];
+  $: opacity = $colors.current[3];
 </script>
 
 <svelte:window on:blur={onMouseUp} on:mouseup={onMouseUp} />
 
 <colorpicker>
   <tools>
-    <color
-      style={`background: rgb(${$colors.current.slice(0, 3).join(',')})`}
-    />
+    <Color color={current} />
     <label>
       Opacity:
       <input
+        disabled={!enableOpacity}
         type="range"
         min={0}
         max={0xFF}
         step={1}
-        value={$colors.current[3]}
+        value={opacity}
         on:change={({ target: { value }}) => { colors.setAlpha(value); }}
       />
     </label>
@@ -166,11 +162,12 @@
     on:mousemove={onMouseMove}
   />
   <palette>
-    {#each $colors.palette as rgb}
-      <color
-        style="background: rgb({rgb.join(',')})"
-        on:click={() => colors.setColor([...rgb, $colors.current[3]], true)}
-      />
+    {#each $colors.palette as rgba}
+      <div on:click={() => colors.setColor(rgba, true)}>
+        <Color
+          color={rgba}
+        />
+      </div>
     {/each}
   </palette>
 </colorpicker>
@@ -178,28 +175,23 @@
 <style>
   colorpicker {
     display: flex;
+    height: 100%;
+    background: #222;
     flex-direction: column;
   }
 
   tools {
-    width: 100%;
+    box-sizing: border-box;
+    padding: 1rem;
     display: flex;
     align-items: center;
-    margin-bottom: 1rem;
-  }
-
-  tools > color {
-    margin: 0 0.25rem;
+    border-bottom: 2px solid #111;
   }
 
   tools > label {
     margin-left: auto;
     display: flex;
     align-items: center;
-  }
-  
-  tools > label > input {
-    margin-right: 0.5rem;
   }
 
   canvas {
@@ -210,19 +202,15 @@
   }
 
   palette {
-    margin-top: 1rem;
+    box-sizing: border-box;
+    padding: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-top: 2px solid #111;
   }
 
-  color {
-    display: block;
-    width: 32px;
-    height: 32px;
-    border-radius: 4px;
+  palette > div {
     margin: 0 0.25rem;
-    border: 1px solid #222;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
   }
 </style>

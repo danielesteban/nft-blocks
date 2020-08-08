@@ -35,15 +35,16 @@
     if (
       $colors.current !== lastColor
       && !(
-        $colors.palette.find(([r, g, b]) => (
+        $colors.palette.find(([r, g, b, a]) => (
           $colors.current[0] === r
           && $colors.current[1] === g
           && $colors.current[2] === b
+          && $colors.current[3] === a
         ))
       ) 
     ) {
       lastColor = $colors.current;
-      colors.addToPalette($colors.current.slice(0, 3));
+      colors.addToPalette($colors.current);
     }
   };
 </script>
@@ -111,12 +112,17 @@
     <texture>
       <Pixels
         color={$colors.current}
+        hasOpacity={type.isTransparent}
         pixels={pixels}
         on:update={onTextureUpdate}
+        showGrid
       />
     </texture>
   </textures>
-  <ColorPicker colors={colors} />
+  <ColorPicker
+    colors={colors}
+    enableOpacity={type.isTransparent}
+  />
 </wrapper>
 
 <style>
@@ -185,6 +191,7 @@
   modifiers > label {
     display: block;
     margin: 0 0.5rem;
+    cursor: pointer;
   }
 
   renderer {

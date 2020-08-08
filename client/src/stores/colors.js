@@ -4,7 +4,7 @@ export default () => {
   const { subscribe, update } = writable({
     area: [0xFF, 0, 0],
     current: [0xFF, 0, 0, 0xFF],
-    palette: [...Array(8)].map(() => [0, 0, 0]),
+    palette: [...Array(8)].map(() => [0, 0, 0, 127]),
   });
   return {
     subscribe,
@@ -12,7 +12,7 @@ export default () => {
       update((colors) => ({
         ...colors,
         palette: [
-          [color[0], color[1], color[2]],
+          [...color],
           ...colors.palette.slice(0, colors.palette.length - 1),
         ],
       }));
@@ -24,12 +24,6 @@ export default () => {
           ...colors.current.slice(0, 3),
           alpha,
         ],
-      }));
-    },
-    setArea(rgb) {
-      update((colors) => ({
-        ...colors,
-        area: rgb,
       }));
     },
     setColor(rgba, updateArea = false) {
