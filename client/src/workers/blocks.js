@@ -736,6 +736,20 @@ context.addEventListener('message', ({ data: message }) => {
       ));
       break;
     }
+    case 'pick': {
+      let { block: { x, y, z } } = message;
+      const chunk = getChunk(
+        Math.floor(x / size),
+        Math.floor(z / size)
+      );
+      x -= size * chunk.x;
+      z -= size * chunk.z;
+      context.postMessage({
+        type: 'pick',
+        block: chunk.voxels[getIndex(x, y, z)],
+      });
+      break;
+    }
     case 'load':
       chunks.clear();
       meshedChunks.clear();

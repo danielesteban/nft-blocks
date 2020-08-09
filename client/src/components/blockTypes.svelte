@@ -2,7 +2,7 @@
   import Texture from './texture.svelte';
 
   export let editor;
-  export let selected = 0;
+  export let selected;
   export let textures;
   export let types;
 

@@ -20,6 +20,7 @@
   const buttons = {
     primary: false,
     secondary: false,
+    tertiary: false,
   };
   const crosshair = new Vector2(0, 0);
   const keyboard = new Vector3(0, 0, 0);
@@ -73,6 +74,7 @@
         .normalize();
       player.position.addScaledVector(direction, delta * 6);
     }
+
     if (
       buttons.primary
       || buttons.primaryDown
@@ -80,30 +82,16 @@
       || buttons.secondary
       || buttons.secondaryDown
       || buttons.secondaryUp
+      || buttons.tertiary
+      || buttons.tertiaryDown
+      || buttons.tertiaryUp
     ) {
       raycaster.setFromCamera(crosshair, camera);
-      if (buttons.primary) {
-        dispatch('primary', raycaster);
-      }
-      if (buttons.primaryDown) {
-        dispatch('primaryDown', raycaster);
-        buttons.primaryDown = false;
-      }
-      if (buttons.primaryUp) {
-        dispatch('primaryUp', raycaster);
-        buttons.primaryUp = false;
-      }
-      if (buttons.secondary) {
-        dispatch('secondary', raycaster);
-      }
-      if (buttons.secondaryDown) {
-        dispatch('secondaryDown', raycaster);
-        buttons.secondaryDown = false;
-      }
-      if (buttons.secondaryUp) {
-        dispatch('secondaryUp', raycaster);
-        buttons.secondaryUp = false;
-      }
+      dispatch('buttons', { buttons: { ...buttons }, raycaster });
+      ['primary', 'secondary', 'tertiary'].forEach((button) => {
+        buttons[`${button}Down`] = false;
+        buttons[`${button}Up`] = false;
+      });
     }
   }
 
@@ -119,16 +107,13 @@
   };
 
   const onBlur = () => {
-    buttons.primary = false;
-    buttons.primaryDown = false;
-    if (buttons.primary) {
-      buttons.primaryUp = true;
-    }
-    buttons.secondary = false;
-    buttons.secondaryDown = false;
-    if (buttons.secondary) {
-      buttons.secondaryUp = true;
-    }
+    ['primary', 'secondary', 'tertiary'].forEach((button) => {
+      buttons[button] = false;
+      buttons[`${button}Down`] = false;
+      if (buttons[button]) {
+        buttons[`${button}Up`] = true;
+      }
+    });
     keyboard.set(0, 0, 0);
   };
 
@@ -191,6 +176,10 @@
         buttons.secondary = true;
         buttons.secondaryDown = true;
         break;
+      case 1:
+        buttons.tertiary = true;
+        buttons.tertiaryDown = true;
+        break;
       default:
         break;
     }
@@ -208,9 +197,13 @@
       buttons.primary = false;
       buttons.primaryUp = true;
     }
-    if (buttons.secondary && button === 1) {
+    if (buttons.secondary && button === 2) {
       buttons.secondary = false;
       buttons.secondaryUp = true;
+    }
+    if (buttons.tertiary && button === 1) {
+      buttons.tertiary = false;
+      buttons.tertiaryUp = true;
     }
   };
 

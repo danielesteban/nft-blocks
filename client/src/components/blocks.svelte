@@ -45,6 +45,9 @@
           }
         });
         break;
+      case 'pick':
+        onPick(message.block);
+        break;
       case 'save':
         onSave(message.chunks);
         break;
@@ -143,41 +146,64 @@
     new Vector3(-1, 0, 0),
     new Vector3(1, 0, 0),
   ];
-  const updateBlock = (raycaster, remove) => {
+  const getBlock = (raycaster, neighbor) => {
     const hit = raycaster.intersectObjects(children)[0] || false;
     if (!hit) {
-      return;
+      return false;
     }
     const { point, uv } = hit;
-    point
+    return point
       .addScaledVector(
         blockFacings[Math.floor(uv.y)],
-        (remove ? -1 : 1) * 0.25
+        (neighbor ? 1 : -1) * 0.25
       )
       .divideScalar(0.5)
       .floor();
+  };
+
+  const onButtons = ({ detail: { buttons, raycaster } }) => {
+    const {
+      primaryDown: isPlacing,
+      secondaryDown: isRemoving,
+      tertiaryDown: isPicking,
+    } = buttons;
+    if (!isPlacing && !isRemoving && !isPicking) {
+      return;
+    }
+    const block = getBlock(raycaster, !(isPicking || isRemoving));
+    if (!block) {
+      return;
+    }
+    if (isPicking) {
+      worker.postMessage({
+        type: 'pick',
+        block: {
+          x: block.x,
+          y: block.y,
+          z: block.z,
+        },
+      });
+      return;
+    }
     worker.postMessage({
       type: 'update',
       update: {
-        x: point.x,
-        y: point.y,
-        z: point.z,
-        type: remove ? 0 : selected + 1,
+        x: block.x,
+        y: block.y,
+        z: block.z,
+        type: isRemoving ? 0 : selected + 1,
       },
     });
-  }
-  const onPrimaryDown = ({ detail: raycaster }) => (
-    updateBlock(raycaster)
-  );
-  const onSecondaryDown = ({ detail: raycaster }) => (
-    updateBlock(raycaster, true)
-  );
+  };
+
+  const onPick = (type) => {
+    selected = type - 1;
+  };
 </script>
 
 <DesktopControls
   bind:this={controls}
-  on:primaryDown={onPrimaryDown}
-  on:secondaryDown={onSecondaryDown}
+  on:buttons={onButtons}
 />
 <Renderer
   bind:scene={scene}

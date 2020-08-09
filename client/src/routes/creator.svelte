@@ -14,7 +14,7 @@
   const editor = EditorStore();
 
   let blocks;
-  let selected;
+  let selected = 0;
 </script>
 
 <editor>
@@ -52,8 +52,8 @@
     <renderer>
       <Blocks
         bind:this={blocks}
+        bind:selected={selected}
         atlas={atlas}
-        selected={selected}
         types={types}
       />
     </renderer>
