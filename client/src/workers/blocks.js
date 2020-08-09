@@ -747,16 +747,16 @@ context.addEventListener('message', ({ data: message }) => {
       break;
     }
     case 'pick': {
-      let { block: { x, y, z } } = message;
+      const { block } = message;
       const chunk = getChunk(
-        Math.floor(x / size),
-        Math.floor(z / size)
+        Math.floor(block.x / size),
+        Math.floor(block.z / size)
       );
-      x -= size * chunk.x;
-      z -= size * chunk.z;
+      block.x -= size * chunk.x;
+      block.z -= size * chunk.z;
       context.postMessage({
         type: 'pick',
-        block: chunk.voxels[getIndex(x, y, z)],
+        block: chunk.voxels[getIndex(block.x, block.y, block.z)],
       });
       break;
     }

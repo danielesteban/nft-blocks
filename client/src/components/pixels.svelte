@@ -4,7 +4,7 @@
   const dispatch = createEventDispatcher();
 
   export let color;
-  export let hasOpacity;
+  export let isTransparent;
   export let pixels;
   export let showGrid;
 
@@ -67,16 +67,16 @@
     ctx
     && (
       pixels !== lastPixels
-      || hasOpacity !== lastOpacity
+      || isTransparent !== lastOpacity
     )
   ) {
     lastPixels = pixels;
-    lastOpacity = hasOpacity;
+    lastOpacity = isTransparent;
     lastPixel = undefined;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let i = 0, y = 0; y < size.y; y += 1) {
       for (let x = 0; x < size.x; x += 1, i += 4) {
-        const alpha = hasOpacity ? pixels[i + 3] / 0xFF : 1;
+        const alpha = isTransparent ? pixels[i + 3] / 0xFF : 1;
         ctx.fillStyle = `rgba(${pixels[i]},${pixels[i + 1]},${pixels[i + 2]},${alpha})`;
         ctx.fillRect(
           x * scale.x, y * scale.y,
@@ -97,13 +97,13 @@
     const pixel = ((size.x * y) + x) * 4;
     if (pixel !== lastPixel) {
       lastPixel = pixel;
-      const alpha = hasOpacity ? color[3] : 0xFF;
+      const alpha = isTransparent ? color[3] : 0xFF;
       pixels[pixel] = color[0];
       pixels[pixel + 1] = color[1];
       pixels[pixel + 2] = color[2];
       pixels[pixel + 3] = alpha;
       ctx.fillStyle = `rgba(${color.slice(0, 3).join(',')},${alpha / 0xFF})`;
-      if (hasOpacity) {
+      if (isTransparent) {
         ctx.clearRect(
           x * scale.x,
           y * scale.y,

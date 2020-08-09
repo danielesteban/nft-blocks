@@ -112,7 +112,7 @@
     <texture>
       <Pixels
         color={$colors.current}
-        hasOpacity={type.isTransparent}
+        isTransparent={type.isTransparent}
         pixels={pixels}
         on:update={onTextureUpdate}
         showGrid

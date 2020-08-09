@@ -28,7 +28,7 @@
   };
 </script>
 
-{#each $types as type, i}
+{#each $types as type, i (type.key)}
   <blockType
     class:selected={selected === i}
     on:click={() => {
@@ -39,7 +39,10 @@
     }}
   >
     <texture>
-      <Texture pixels={$textures[i].top} />
+      <Texture
+        isTransparent={type.isTransparent}
+        pixels={$textures[i].top}
+      />
     </texture>
     <info>
       <name>{type.name}</name>
