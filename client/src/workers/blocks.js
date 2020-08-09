@@ -703,7 +703,7 @@ context.addEventListener('message', ({ data: message }) => {
             }
           });
           [...meshedChunks.values()].forEach((chunk) => {
-            const { key, voxels } = chunk;
+            const { voxels } = chunk;
             const { length } = voxels;
             let count = 0;
             for (let i = 0; i < length; i += fields.count) {
@@ -719,7 +719,9 @@ context.addEventListener('message', ({ data: message }) => {
             if (count > 0) {
               chunk.hasPropagated = false;
             } else {
+              const { key, x, z } = chunk;
               chunks.delete(key);
+              meshedChunks.set(key, getChunk(x, z));
             }
           });
         }
