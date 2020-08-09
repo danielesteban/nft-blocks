@@ -150,7 +150,7 @@
         max={0xFF}
         step={1}
         value={opacity}
-        on:change={({ target: { value }}) => { colors.setAlpha(value); }}
+        on:input={({ target: { value }}) => { colors.setAlpha(value); }}
       />
     </label>
   </tools>
