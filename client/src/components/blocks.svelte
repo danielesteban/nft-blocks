@@ -3,6 +3,7 @@
   import { Vector3 } from 'three';
   import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
   import DesktopControls from './desktopControls.svelte';
+  import Help from './help.svelte';
   import Renderer from './renderer.svelte';
   import Voxels from '../renderables/voxels';
 
@@ -210,11 +211,11 @@
   controls={controls}
   initialPosition={initialPosition}
 />
-
 <crosshair>
   <div></div>
   <div></div>
 </crosshair>
+
 <actions on:click={(e) => e.preventDefault()}>
   <label>
     Sunlight:
@@ -227,6 +228,7 @@
     />
   </label>
 </actions>
+<Help />
 
 <style>
   crosshair {
