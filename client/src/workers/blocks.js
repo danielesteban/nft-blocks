@@ -703,16 +703,24 @@ context.addEventListener('message', ({ data: message }) => {
             }
           });
           [...meshedChunks.values()].forEach((chunk) => {
-            const { voxels } = chunk;
+            const { key, voxels } = chunk;
             const { length } = voxels;
+            let count = 0;
             for (let i = 0; i < length; i += fields.count) {
               if (remap) {
                 voxels[i] = remap[voxels[i]];
               }
               voxels[i + fields.light] = types[voxels[i]].isLight ? maxLight : 0;
               voxels[i + fields.sunlight] = 0;
+              if (voxels[i] !== 0) {
+                count += 1;
+              }
             }
-            chunk.hasPropagated = false;
+            if (count > 0) {
+              chunk.hasPropagated = false;
+            } else {
+              chunks.delete(key);
+            }
           });
         }
       }
