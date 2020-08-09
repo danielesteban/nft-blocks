@@ -1,5 +1,5 @@
 <script>
-  import Editor from './routes/editor.svelte';
+  import Creator from './routes/creator.svelte';
 
   // This should prolly be a service that just exports a store.
   // Maybe use the history module and a path-to-regex schema.
@@ -11,14 +11,18 @@
     ));
     switch (id) {
       default:
-        route.component = Editor;
+        route.component = Creator;
         break;
     }
     route.params = params.length ? params : undefined;
   };
   window.addEventListener('hashchange', onLocationChange);
   onLocationChange();
+
+  const onContextMenu = (e) => e.preventDefault();
 </script>
+
+<svelte:window on:contextmenu={onContextMenu} />
 
 <app>
   <route>

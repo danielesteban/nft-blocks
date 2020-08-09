@@ -1,10 +1,10 @@
 <script>
   import { onMount } from 'svelte';
 
-  import ColorPicker from '../components/colorPicker.svelte';
-  import ModelControls from '../components/modelControls.svelte';
-  import Pixels from '../components/pixels.svelte';
-  import Renderer from '../components/renderer.svelte';
+  import ColorPicker from './colorPicker.svelte';
+  import ModelControls from './modelControls.svelte';
+  import Pixels from './pixels.svelte';
+  import Renderer from './renderer.svelte';
   import Block from '../renderables/block';
 
   export let editor;

@@ -1,36 +1,17 @@
 <script>
   import { writable } from 'svelte/store';
-  import Block from '../components/block.svelte';
   import Blocks from '../components/blocks.svelte';
   import BlockTypes from '../components/blockTypes.svelte';
+  import Editor from '../components/editor.svelte';
   import Tools from '../components/tools.svelte';
   import Trading from '../components/trading.svelte';
   import BlockTypesStore from '../stores/blockTypes';
   import ColorsStore from '../stores/colors';
+  import EditorStore from '../stores/editor';
 
-  // This should prolly load the types from localstorage or an api
   const { atlas, types, textures } = BlockTypesStore();
-
   const colors = ColorsStore();
-
-  const editor = (() => {
-    const { subscribe, set } = writable();
-    const update = (index) => {
-      set(index);
-      requestAnimationFrame(() => (
-        window.dispatchEvent(new Event('resize'))
-      ));
-    };
-    return {
-      subscribe,
-      close() {
-        update(undefined);
-      },
-      open(index) {
-        update(index);
-      },
-    };
-  })();
+  const editor = EditorStore();
 
   let blocks;
   let selected;
@@ -40,7 +21,13 @@
   <ui class="aside">
    <heading>
       Block Types
-      <button on:click={() => types.create()}>
+      <button
+        on:click={() => {
+          types.create();
+          selected = $types.length - 1;
+          editor.open(selected);
+        }}
+      >
         &plus;
       </button>
     </heading>
@@ -72,7 +59,7 @@
     </renderer>
     {#if $editor !== undefined}
       <ui>
-        <Block
+        <Editor
           editor={editor}
           colors={colors}
           textures={textures}

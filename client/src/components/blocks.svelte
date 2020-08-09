@@ -2,8 +2,8 @@
   import { onDestroy } from 'svelte';
   import { Vector3 } from 'three';
   import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
-  import DesktopControls from '../components/desktopControls.svelte';
-  import Renderer from '../components/renderer.svelte';
+  import DesktopControls from './desktopControls.svelte';
+  import Renderer from './renderer.svelte';
   import Voxels from '../renderables/voxels';
 
   export let atlas;

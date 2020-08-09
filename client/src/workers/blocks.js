@@ -635,23 +635,6 @@ const remeshAll = (() => {
   };
 })();
 
-const repropagate = () => {
-  [...chunks.values()].forEach(({ key }) => {
-    if (!meshedChunks.has(key)) {
-      chunks.delete(key);
-    }
-  });
-  [...meshedChunks.values()].forEach((chunk) => {
-    const { voxels } = chunk;
-    const { length } = voxels;
-    for (let i = 0; i < length; i += fields.count) {
-      voxels[i + fields.light] = types[voxels[i]].isLight ? maxLight : 0;
-      voxels[i + fields.sunlight] = 0;
-    }
-    chunk.hasPropagated = false;
-  });
-};
-
 context.addEventListener('message', ({ data: message }) => {
   switch (message.type) {
     case 'types': {
@@ -688,20 +671,43 @@ context.addEventListener('message', ({ data: message }) => {
             }),
           })),
       ];
-      if (previousTypes) {
-        const [current, update] = [previousTypes, types]
-          .map((types) => types.reduce((types, { isLight, isTransparent }, i) => {
-            if (isLight || isTransparent) {
-              types.push(i);
+      if (
+        previousTypes
+        && (
+          types.length < previousTypes.length
+          || (() => {
+            const [current, update] = [previousTypes, types]
+              .map((types) => types.reduce((types, { isLight, isTransparent }, i) => {
+                if (isLight || isTransparent) {
+                  types.push(i);
+                }
+                return types;
+              }, []));
+            return (
+              current.length !== update.length
+              || current.find((i) => (i !== update[i]))
+            );
+          })()
+        )
+      ) {
+        [...chunks.values()].forEach(({ key }) => {
+          if (!meshedChunks.has(key)) {
+            chunks.delete(key);
+          }
+        });
+        [...meshedChunks.values()].forEach((chunk) => {
+          const { voxels } = chunk;
+          const { length } = voxels;
+          for (let i = 0; i < length; i += fields.count) {
+            const type = types[voxels[i]];
+            if (!type) {
+              voxels[i] = 0;
             }
-            return types;
-          }, []));
-        if (
-          current.length !== update.length
-          || current.find((i) => (i !== update[i]))
-        ) {
-          repropagate();
-        }
+            voxels[i + fields.light] = type && type.isLight ? maxLight : 0;
+            voxels[i + fields.sunlight] = 0;
+          }
+          chunk.hasPropagated = false;
+        });
       }
       remeshAll();
       break;

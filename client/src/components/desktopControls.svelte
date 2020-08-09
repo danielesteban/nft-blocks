@@ -1,11 +1,11 @@
 <script>
+  import { createEventDispatcher, onMount, onDestroy } from 'svelte';
   import {
     Euler,
     Raycaster,
     Vector2,
     Vector3,
   } from 'three';
-  import { createEventDispatcher, onMount, onDestroy } from 'svelte';
 
   const dispatch = createEventDispatcher();
 

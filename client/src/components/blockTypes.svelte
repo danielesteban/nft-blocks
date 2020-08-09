@@ -1,10 +1,35 @@
 <script>
-  import Texture from '../components/texture.svelte';
+  import Texture from './texture.svelte';
 
   export let editor;
   export let selected = 0;
   export let textures;
   export let types;
+
+  const onEdit = (type) => {
+    if ($editor !== type) {
+      editor.open(type);
+    }
+  };
+
+  const onClone = (type) => {
+    types.clone(type);
+    selected = $types.length - 1;
+    editor.open(selected);
+  };
+
+  const onRemove = (type) => {
+    if (!confirm('Are you sure?')) {
+      return;
+    }
+    if ($editor === type) {
+      editor.close();
+    }
+    if (selected === type) {
+      selected = 0;
+    }
+    types.remove(type);
+  };
 </script>
 
 {#each $types as type, i}
@@ -29,14 +54,17 @@
         &nbsp;
       </modifiers>
       <actions>
-        <button
-          on:click={() => {
-            if ($editor !== i) {
-              editor.open(i);
-            }
-          }}
-        >
+        <button on:click={() => onEdit(i)}>
           Edit
+        </button>
+        <button on:click={(e) => { e.stopPropagation(); onClone(i); }}>
+          Clone
+        </button>
+        <button
+          on:click={(e) => { e.stopPropagation(); onRemove(i); }}
+          disabled={$types.length <= 1}
+        >
+          Remove
         </button>
       </actions>
     </info>
@@ -67,10 +95,15 @@
 
   info {
     display: block;
+    overflow: hidden;
+    flex-grow: 1;
   }
 
   name {
     display: block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 
   modifiers {
@@ -79,7 +112,9 @@
   }
 
   actions {
-    display: block;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
     padding: 0.25rem 0;
   }
   

@@ -41,13 +41,28 @@ const generateDefaultTextures = () => ({
 });
 
 export default () => {
-  let createDefaultTextures;
+  let createTextures;
+  let cloneTextures;
+  let removeTextures;
   let deserializeTextures;
   let updateAtlas;
   const textures = (() => {
     const { subscribe, set, update } = writable([]);
-    createDefaultTextures = () => {
+    createTextures = () => {
       update((types) => [...types, generateDefaultTextures()]);
+      updateAtlas();
+    };
+    cloneTextures = (type) => {
+      update((types) => [...types,
+        ['bottom', 'side', 'top'].reduce((textures, key) => {
+          textures[key] = new Uint8ClampedArray(types[type][key]);
+          return textures;
+        }, {}),
+      ]);
+      updateAtlas();
+    };
+    removeTextures = (type) => {
+      update((types) => [...types.slice(0, type), ...types.slice(type + 1)]);
       updateAtlas();
     };
     deserializeTextures = (serialized) => {
@@ -82,7 +97,18 @@ export default () => {
           isLight: type.isLight || false,
           isTransparent: type.isTransparent || false,
         }]);
-        createDefaultTextures();
+        createTextures();
+      },
+      clone(type) {
+        update((types) => [...types, {
+          ...types[type],
+          name: `${types[type].name} (Copy)`,
+        }]);
+        cloneTextures(type);
+      },
+      remove(type) {
+        update((types) => [...types.slice(0, type), ...types.slice(type + 1)]);
+        removeTextures(type);
       },
       update(type, key, value) {
         update((types) => [
