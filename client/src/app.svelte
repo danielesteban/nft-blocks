@@ -1,5 +1,6 @@
 <script>
   import Creator from './routes/creator.svelte';
+  import Welcome from './components/welcome.svelte';
 
   // This should prolly be a service that just exports a store.
   // Maybe use the history module and a path-to-regex schema.
@@ -52,6 +53,7 @@
       </credits>
     </div>
   </toolbar>
+  <Welcome/>
 </app>
 
 <style>

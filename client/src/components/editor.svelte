@@ -58,6 +58,24 @@
 </close>
 <wrapper>
   <block>
+    <modifiers>
+      <label>
+        <input
+          type="checkbox"
+          checked={type.isLight}
+          on:change={({ target: { checked }}) => { types.update($editor, 'isLight', checked); }}
+        />
+        Emits light
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          checked={type.isTransparent}
+          on:change={({ target: { checked }}) => { types.update($editor, 'isTransparent', checked); }}
+        />
+        Transparent
+      </label>
+    </modifiers>
     <renderer>
       <ModelControls bind:this={controls} />
       <Renderer bind:scene={scene} controls={controls} />
@@ -69,24 +87,6 @@
         on:change={({ target: { value }}) => { types.update($editor, 'name', value); }}
       />
     </name>
-    <modifiers>
-      <label>
-        <input
-          type="checkbox"
-          checked={type.isLight}
-          on:change={({ target: { checked }}) => { types.update($editor, 'isLight', checked); }}
-        />
-        isLight
-      </label>
-      <label>
-        <input
-          type="checkbox"
-          checked={type.isTransparent}
-          on:change={({ target: { checked }}) => { types.update($editor, 'isTransparent', checked); }}
-        />
-        isTransparent
-      </label>
-    </modifiers>
   </block>
   <textures>
     <tabs>
@@ -145,6 +145,7 @@
   block, textures {
     display: flex;
     flex-direction: column;
+    background: #222;
     width: 400px;
     height: 100%;
   }
@@ -174,8 +175,11 @@
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
   }
 
-  name {
-    display: block;
+  name, modifiers {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid #111;
   }
 
   name > input {
@@ -183,14 +187,12 @@
   }
 
   modifiers {
-    display: flex;
-    justify-content: center;
-    padding: 0.25rem 0;
+    justify-content: space-evenly;
+    padding: 0.5rem 0;
   }
 
   modifiers > label {
     display: block;
-    margin: 0 0.5rem;
     cursor: pointer;
   }
 

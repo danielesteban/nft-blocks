@@ -2,7 +2,7 @@
 const context = self;
 
 const size = 16;
-const subchunks = 4;
+const subchunks = 5;
 const maxHeight = size * subchunks;
 const maxLight = 15;
 const fields = {
