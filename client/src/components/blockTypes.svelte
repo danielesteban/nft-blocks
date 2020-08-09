@@ -22,12 +22,8 @@
     if (!confirm('Are you sure?')) {
       return;
     }
-    if ($editor === type) {
-      editor.close();
-    }
-    if (selected === type) {
-      selected = 0;
-    }
+    editor.close();
+    selected = 0;
     types.remove(type);
   };
 </script>

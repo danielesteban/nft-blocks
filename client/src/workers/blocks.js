@@ -671,43 +671,50 @@ context.addEventListener('message', ({ data: message }) => {
             }),
           })),
       ];
-      if (
-        previousTypes
-        && (
-          types.length < previousTypes.length
-          || (() => {
-            const [current, update] = [previousTypes, types]
-              .map((types) => types.reduce((types, { isLight, isTransparent }, i) => {
-                if (isLight || isTransparent) {
-                  types.push(i);
-                }
-                return types;
-              }, []));
-            return (
-              current.length !== update.length
-              || current.find((i) => (i !== update[i]))
-            );
-          })()
-        )
-      ) {
-        [...chunks.values()].forEach(({ key }) => {
-          if (!meshedChunks.has(key)) {
-            chunks.delete(key);
-          }
-        });
-        [...meshedChunks.values()].forEach((chunk) => {
-          const { voxels } = chunk;
-          const { length } = voxels;
-          for (let i = 0; i < length; i += fields.count) {
-            const type = types[voxels[i]];
-            if (!type) {
-              voxels[i] = 0;
+      if (previousTypes) {
+        let repropagate = false;
+        let remap = false;
+        if (types.length < previousTypes.length) {
+          repropagate = true;
+          remap = previousTypes.map(({ key }) => {
+            if (!key) {
+              return 0;
             }
-            voxels[i + fields.light] = type && type.isLight ? maxLight : 0;
-            voxels[i + fields.sunlight] = 0;
-          }
-          chunk.hasPropagated = false;
-        });
+            const index = types.findIndex(({ key: id }) => (id === key));
+            return ~index ? index : 0;
+          });
+        } else {
+          const [current, update] = [previousTypes, types]
+            .map((types) => types.reduce((types, { isLight, isTransparent }, i) => {
+              if (isLight || isTransparent) {
+                types.push(i);
+              }
+              return types;
+            }, []));
+          repropagate = (
+            current.length !== update.length
+            || current.find((i) => (i !== update[i]))
+          );
+        }
+        if (repropagate) {
+          [...chunks.values()].forEach(({ key }) => {
+            if (!meshedChunks.has(key)) {
+              chunks.delete(key);
+            }
+          });
+          [...meshedChunks.values()].forEach((chunk) => {
+            const { voxels } = chunk;
+            const { length } = voxels;
+            for (let i = 0; i < length; i += fields.count) {
+              if (remap) {
+                voxels[i] = remap[voxels[i]];
+              }
+              voxels[i + fields.light] = types[voxels[i]].isLight ? maxLight : 0;
+              voxels[i + fields.sunlight] = 0;
+            }
+            chunk.hasPropagated = false;
+          });
+        }
       }
       remeshAll();
       break;

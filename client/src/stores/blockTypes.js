@@ -89,6 +89,7 @@ export default () => {
   })();
   const types = (() => {
     const { subscribe, set, update } = writable([]);
+    let key = 1;
     return {
       subscribe,
       create(type = {}) {
@@ -96,14 +97,18 @@ export default () => {
           name: type.name || 'New Block',
           isLight: type.isLight || false,
           isTransparent: type.isTransparent || false,
+          key,
         }]);
+        key += 1;
         createTextures();
       },
       clone(type) {
         update((types) => [...types, {
           ...types[type],
           name: `${types[type].name} (Copy)`,
+          key,
         }]);
+        key += 1;
         cloneTextures(type);
       },
       remove(type) {
@@ -124,8 +129,11 @@ export default () => {
         }
       },
       deserialize(types) {
+        key = 1;
         const serializedTextures = [];
         set(types.map(({ textures, ...type }, i) => {
+          type.key = key;
+          key += 1;
           serializedTextures[i] = textures;
           return type;
         }));
@@ -134,7 +142,7 @@ export default () => {
       serialize() {
         const $textures = get(textures);
         const $types = get(types);
-        return $types.map((type, i) => ({
+        return $types.map(({ key: id, ...type }, i) => ({
           ...type,
           textures: ['bottom', 'side', 'top'].reduce((textures, key) => {
             textures[key] = btoa(String.fromCharCode.apply(null, $textures[i][key]));
