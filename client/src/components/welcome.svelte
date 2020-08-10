@@ -9,7 +9,7 @@
       This is an alpha test of the voxel editor for the cryptoart tool I'm creating.
     </p>
     <p>
-      As many of you know, what you create with this editor will be mintable into an inmutable NFT Token and you'll be able to trade it and make some money from it.
+      As many of you know, what you create with this editor will be mintable into an immutable NFT Token and you'll be able to trade it and make some money from it.
     </p>
     <p>
       The trading functionality and the gallery in where the creations will be displayed it's not ready yet. I'm still working on both of those things. 
