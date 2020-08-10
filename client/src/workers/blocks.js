@@ -702,10 +702,10 @@ context.addEventListener('message', ({ data: message }) => {
               chunks.delete(key);
             }
           });
+          let count = 0;
           [...meshedChunks.values()].forEach((chunk) => {
             const { voxels } = chunk;
             const { length } = voxels;
-            let count = 0;
             for (let i = 0; i < length; i += fields.count) {
               if (remap) {
                 voxels[i] = remap[voxels[i]];
@@ -716,14 +716,17 @@ context.addEventListener('message', ({ data: message }) => {
                 count += 1;
               }
             }
-            if (count > 0) {
-              chunk.hasPropagated = false;
-            } else {
-              const { key, x, z } = chunk;
-              chunks.delete(key);
-              meshedChunks.set(key, getChunk(x, z));
-            }
+            chunk.hasPropagated = false;
           });
+          if (count === 0) {
+            for (let x = -1; x < 1; x += 1) {
+              for (let z = -1; z < 1; z += 1) {
+                const key = `${x}:${z}`;
+                chunks.delete(key);
+                meshedChunks.set(key, getChunk(x, z));
+              }
+            }
+          }
         }
       }
       remeshAll();
