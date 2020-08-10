@@ -4,6 +4,7 @@
   const dispatch = createEventDispatcher();
 
   export let color;
+  export let noise;
   export let isTransparent;
   export let pixels;
   export let showGrid;
@@ -97,12 +98,21 @@
     const pixel = ((size.x * y) + x) * 4;
     if (pixel !== lastPixel) {
       lastPixel = pixel;
-      const alpha = isTransparent ? color[3] : 0xFF;
-      pixels[pixel] = color[0];
-      pixels[pixel + 1] = color[1];
-      pixels[pixel + 2] = color[2];
-      pixels[pixel + 3] = alpha;
-      ctx.fillStyle = `rgba(${color.slice(0, 3).join(',')},${alpha / 0xFF})`;
+      const rgba = [
+        ...color.slice(0, 3),
+        (isTransparent ? color[3] : 0xFF),
+      ];
+      if (noise) {
+        const intensity = ((color[0] + color[1] + color[2]) / 3) * noise * 2;
+        for (let i = 0; i < 3; i += 1) {
+          rgba[i] = Math.floor(rgba[i] + (Math.random() - 0.5) * intensity);
+        }
+      }
+      pixels[pixel] = rgba[0];
+      pixels[pixel + 1] = rgba[1];
+      pixels[pixel + 2] = rgba[2];
+      pixels[pixel + 3] = rgba[3];
+      ctx.fillStyle = `rgba(${rgba[0]},${rgba[1]},${rgba[2]},${rgba[3] / 0xFF})`;
       if (isTransparent) {
         ctx.clearRect(
           x * scale.x,

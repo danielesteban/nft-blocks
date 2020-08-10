@@ -142,6 +142,17 @@
   <tools>
     <Color color={current} />
     <label>
+      Noise:
+      <input
+        type="range"
+        min={0}
+        max={1}
+        step={0.01}
+        value={$colors.noise}
+        on:input={({ target: { value }}) => { colors.setNoise(value); }}
+      />
+    </label>
+    <label>
       Opacity:
       <input
         disabled={!enableOpacity}
@@ -185,13 +196,17 @@
     padding: 1rem;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     border-bottom: 2px solid #111;
   }
 
   tools > label {
-    margin-left: auto;
     display: flex;
     align-items: center;
+  }
+
+  tools > label > input[type="range"] {
+    width: 5rem;
   }
 
   canvas {

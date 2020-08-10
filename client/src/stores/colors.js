@@ -4,6 +4,7 @@ export default () => {
   const { subscribe, update } = writable({
     area: [0xFF, 0, 0],
     current: [0xFF, 0, 0, 0xFF],
+    noise: 0,
     palette: [...Array(8)].map(() => [0, 0, 0, 127]),
   });
   return {
@@ -31,6 +32,12 @@ export default () => {
         ...colors,
         current: rgba,
         area: updateArea ? rgba.slice(0, 3) : colors.area,
+      }));
+    },
+    setNoise(noise) {
+      update((colors) => ({
+        ...colors,
+        noise,
       }));
     },
   };

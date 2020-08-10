@@ -113,6 +113,7 @@
       <Pixels
         color={$colors.current}
         isTransparent={type.isTransparent}
+        noise={$colors.noise}
         pixels={pixels}
         on:update={onTextureUpdate}
         showGrid
