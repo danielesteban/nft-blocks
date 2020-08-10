@@ -204,10 +204,6 @@ export default () => {
     {
       name: 'Default block',
     },
-    {
-      name: 'Default light',
-      isLight: true,
-    },
   ].forEach((type) => (
     types.create(type)
   ));
