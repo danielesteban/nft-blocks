@@ -179,6 +179,9 @@ export default () => {
           const offset = i * slotWidth;
           for (let y = 0, j = 0; y < height; y += 1) {
             for (let x = 0; x < slotWidth; x += 1) {
+              if (x === 0 && (y === 1 || y === height - 1)) {
+                j -= textureWidth * 4;
+              }
               const p = (y * strideY) + ((offset + x) * strideX);
               pixels[p] = texture[j];
               pixels[p + 1] = texture[j + 1];
@@ -186,10 +189,7 @@ export default () => {
               if (hasAlpha) {
                 pixels[p + 3] = texture[j + 3];
               }
-              if (
-                x !== 0 && x !== slotWidth - 2
-                && y !== 0 && y !== height - 2
-              ) {
+              if (x !== 0 && x !== slotWidth - 2) {
                 j += 4;
               }
             }

@@ -13,7 +13,7 @@
 
   let controls;
   let scene;
-  let sunlight = 1;
+  let sunlight = 0.5;
 
   const initialPosition = { x: 0, y: 21, z: 8 };
   const worker = new Worker('dist/blocks.worker.js');
