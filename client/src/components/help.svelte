@@ -15,8 +15,12 @@
   ];
 
   let visible = true;
-  const onKeydown = ({ keyCode, repeat }) => {
-    if (!repeat && keyCode === 72) {
+  const onKeydown = ({ keyCode, repeat, target }) => {
+    if (
+      !repeat
+      && keyCode === 72
+      && target.tagName.toUpperCase() !== 'INPUT'
+    ) {
       visible = !visible;
     }
   };
