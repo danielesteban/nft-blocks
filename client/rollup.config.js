@@ -1,3 +1,4 @@
+import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import json from '@rollup/plugin-json';
@@ -7,6 +8,28 @@ import svelte from 'rollup-plugin-svelte';
 import { terser } from 'rollup-plugin-terser';
 
 const production = !process.env.ROLLUP_WATCH;
+
+const serve = () => {
+  let server;
+  const onExit = () => {
+    if (server) {
+      server.kill(0);
+    }
+  };
+  return {
+    writeBundle() {
+      if (server) {
+        return;
+      }
+      server = spawn('npm', ['run', 'client:serve'], {
+        stdio: ['ignore', 'inherit', 'inherit'],
+        shell: true,
+      });
+      process.on('SIGTERM', onExit);
+      process.on('exit', onExit);
+    },
+  };
+};
 
 const workersPath = path.join(__dirname, 'src', 'workers');
 const workers = fs.readdirSync(workersPath)
@@ -32,7 +55,7 @@ export default [
         dedupe: ['svelte'],
       }),
       json(),
-      ...(production ? [terser()] : [livereload(path.join(__dirname, 'dist'))]),
+      ...(production ? [terser()] : [serve(), livereload(path.join(__dirname, 'dist'))]),
     ],
   },
   ...workers.map((name) => ({

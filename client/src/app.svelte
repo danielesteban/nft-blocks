@@ -53,18 +53,20 @@
       </credits>
     </div>
   </toolbar>
-  <Welcome/>
 </app>
+
+<Welcome/>
 
 <style>
   app {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
   }
 
   route {
+    flex-grow: 1;
     display: block;
-    width: 100%;
-    height: calc(100vh - 40px);
     overflow: overlay;
   }
 
@@ -72,7 +74,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 100%;
     height: 40px;
     padding: 0 1rem;
     box-sizing: border-box;

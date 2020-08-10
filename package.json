@@ -7,9 +7,8 @@
   "private": true,
   "scripts": {
     "client:build": "rollup -c client/rollup.config.js",
-    "client:watch": "npm run client:build -- -w",
-    "client:serve": "sirv -p 8080 client",
-    "start": "npm-run-all --parallel client:watch client:serve"
+    "client:serve": "sirv --dev -p 8080 client",
+    "start": "npm run client:build -- -w"
   },
   "dependencies": {
     "@rollup/plugin-json": "^4.1.0",
@@ -26,7 +25,6 @@
     "eslint": "^7.2.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.21.2",
-    "eslint-plugin-svelte3": "^2.7.3",
-    "npm-run-all": "^4.1.5"
+    "eslint-plugin-svelte3": "^2.7.3"
   }
 }
