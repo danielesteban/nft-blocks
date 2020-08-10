@@ -168,22 +168,29 @@ export default () => {
         return materials;
       }, { opaque: [], transparent: [] });
       set(['opaque', 'transparent'].reduce((atlas, key) => {
-        const width = materials[key].length * textureWidth;
-        const height = textureHeight;
+        const slotWidth = textureWidth + 2;
         const hasAlpha = key === 'transparent';
+        const width = materials[key].length * slotWidth;
+        const height = textureHeight + 2;
         const strideX = hasAlpha ? 4 : 3;
         const strideY = width * strideX;
         const pixels = new Uint8ClampedArray(strideY * height);
         materials[key].forEach((texture, i) => {
-          const offset = i * textureWidth;
-          for (let y = 0, j = 0; y < textureHeight; y += 1) {
-            for (let x = 0; x < textureWidth; x += 1, j += 4) {
+          const offset = i * slotWidth;
+          for (let y = 0, j = 0; y < height; y += 1) {
+            for (let x = 0; x < slotWidth; x += 1) {
               const p = (y * strideY) + ((offset + x) * strideX);
               pixels[p] = texture[j];
               pixels[p + 1] = texture[j + 1];
               pixels[p + 2] = texture[j + 2];
               if (hasAlpha) {
                 pixels[p + 3] = texture[j + 3];
+              }
+              if (
+                x !== 0 && x !== slotWidth - 2
+                && y !== 0 && y !== height - 2
+              ) {
+                j += 4;
               }
             }
           }

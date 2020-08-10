@@ -11,6 +11,8 @@ const fields = {
   sunlight: 2,
   count: 3,
 };
+const textureWidth = 16;
+const textureHeight = 16;
 
 const chunks = new Map();
 let sunlightIntensity = 1;
@@ -356,6 +358,10 @@ const chunkNeighbors = [
   { x: 0, z: 1 },
   { x: 1, z: 1 },
 ];
+const textureY = {
+  from: 1 / (textureHeight + 2),
+  to: (textureHeight + 1) / (textureHeight + 2),
+};
 const meshedChunks = new Map();
 const mesh = (cx, cz) => {
   const chunk = getChunk(cx, cz);
@@ -400,10 +406,10 @@ const mesh = (cx, cz) => {
     ) => {
       const texture = types[type].textures[facing];
       const uvs = [
-        [texture[0], facing + 1],
-        [texture[1], facing + 1],
-        [texture[1], facing],
-        [texture[0], facing],
+        [texture.from, facing + textureY.to],
+        [texture.to, facing + textureY.to],
+        [texture.to, facing + textureY.from],
+        [texture.from, facing + textureY.from],
       ];
       const vertices = [p1, p2, p3, p4];
       if (lighting[0] + lighting[2] < lighting[1] + lighting[3]) {
@@ -666,8 +672,13 @@ context.addEventListener('message', ({ data: message }) => {
           .map((type) => ({
             ...type,
             textures: type.textures.map((index) => {
-              const count = textures[type.isTransparent ? 'transparent' : 'opaque'];
-              return [index / count, (index + 1) / count];
+              const slotSize = 1 / textures[type.isTransparent ? 'transparent' : 'opaque'];
+              const slotPixel = slotSize / (textureWidth + 2);
+              const from = (index * slotSize) + slotPixel;
+              return {
+                from,
+                to: from + (slotPixel * textureWidth),
+              };
             }),
           })),
       ];
