@@ -8,11 +8,18 @@
   "scripts": {
     "client:build": "rollup -c client/rollup.config.js",
     "client:serve": "sirv --dev -p 8080 client",
+    "contracts:compile": "truffle compile",
+    "contracts:migrate": "cross-env NODE_ENV=production truffle migrate --network development",
+    "contracts:test": "truffle test",
+    "ganache": "ganache-cli -p 8545 -q",
     "start": "npm run client:build -- -w"
   },
   "dependencies": {
+    "@openzeppelin/contracts": "^3.1.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^8.4.0",
+    "@truffle/hdwallet-provider": "^1.0.42",
+    "dotenv": "^8.2.0",
     "rollup": "^2.23.1",
     "rollup-plugin-livereload": "^1.3.0",
     "rollup-plugin-svelte": "^5.2.3",
@@ -22,9 +29,13 @@
     "three": "^0.119.1"
   },
   "devDependencies": {
+    "@openzeppelin/test-helpers": "^0.5.6",
+    "cross-env": "^7.0.2",
     "eslint": "^7.2.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.21.2",
-    "eslint-plugin-svelte3": "^2.7.3"
+    "eslint-plugin-svelte3": "^2.7.3",
+    "ganache-cli": "^6.10.1",
+    "truffle": "^5.1.39"
   }
 }

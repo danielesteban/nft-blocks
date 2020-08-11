@@ -1,0 +1,11 @@
+{
+  "env": {
+    "mocha": true,
+    "node": true
+  },
+  "globals": {
+    "artifacts": "readonly",
+    "assert": "readonly",
+    "contract": "readonly"
+  }
+}
