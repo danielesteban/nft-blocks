@@ -24,7 +24,6 @@
     "rollup-plugin-livereload": "^1.3.0",
     "rollup-plugin-svelte": "^5.2.3",
     "rollup-plugin-terser": "^7.0.0",
-    "sirv-cli": "^1.0.5",
     "svelte": "^3.24.1",
     "three": "^0.119.1"
   },
@@ -36,6 +35,7 @@
     "eslint-plugin-import": "^2.21.2",
     "eslint-plugin-svelte3": "^2.7.3",
     "ganache-cli": "^6.10.1",
+    "sirv-cli": "^1.0.5",
     "truffle": "^5.1.39"
   }
 }
