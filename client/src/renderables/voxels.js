@@ -1,11 +1,12 @@
 import {
   BufferGeometry,
+  CanvasTexture,
   DataTexture,
+  Group,
   Mesh,
   BufferAttribute,
   MeshBasicMaterial,
   NearestFilter,
-  Object3D,
   RGBFormat,
   RGBAFormat,
   RepeatWrapping,
@@ -16,7 +17,7 @@ import {
 
 // Voxels chunk
 
-class Voxels extends Object3D {
+class Voxels extends Group {
   static setupMaterials() {
     Voxels.materials = {
       opaque: new MeshBasicMaterial({
@@ -27,6 +28,50 @@ class Voxels extends Object3D {
         vertexColors: true,
       }),
     };
+  }
+
+  static getExportableMaterials() {
+    if (!Voxels.materials) {
+      Voxels.setupMaterials();
+    }
+    const { materials } = Voxels;
+    return ['opaque', 'transparent'].reduce((exported, key) => {
+      if (materials[key].map) {
+        const { map: texture } = materials[key];
+        const { image } = texture;
+        const material = materials[key].clone();
+        const data = new ImageData(image.width, image.height);
+        const isTransparent = texture.format === RGBAFormat;
+        const stride = isTransparent ? 4 : 3;
+        const { length } = data.data;
+        for (let i = 0, j = 0; i < length; i += 4, j += stride) {
+          data.data[i] = image.data[j];
+          data.data[i + 1] = image.data[j + 1];
+          data.data[i + 2] = image.data[j + 2];
+          data.data[i + 3] = isTransparent ? image.data[j + 3] : 0xFF;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = image.width;
+        canvas.height = image.height;
+        canvas.getContext('2d').putImageData(data, 0, 0);
+        material.map = new CanvasTexture(
+          canvas,
+          UVMapping,
+          RepeatWrapping,
+          RepeatWrapping,
+          NearestFilter,
+          NearestFilter,
+          RGBAFormat,
+          UnsignedByteType,
+          1,
+          sRGBEncoding
+        );
+        material.map.flipY = false;
+        material.name = key;
+        exported[key] = material;
+      }
+      return exported;
+    }, {});
   }
 
   static updateAtlas(atlas) {
@@ -82,6 +127,22 @@ class Voxels extends Object3D {
       .multiplyScalar(8);
     this.scale.setScalar(0.5);
     this.updateMatrix();
+  }
+
+  clone(materials) {
+    const { meshes, position, scale } = this;
+    const clone = new Group();
+    clone.position.copy(position);
+    clone.scale.copy(scale);
+    ['opaque', 'transparent'].forEach((key) => {
+      const mesh = meshes[key];
+      if (mesh.visible) {
+        const cloned = mesh.clone();
+        cloned.material = materials[key];
+        clone.add(cloned);
+      }
+    });
+    return clone;
   }
 
   dispose() {

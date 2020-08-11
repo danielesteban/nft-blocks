@@ -9,7 +9,7 @@
   <button on:click={blocks.save}>
     Export
   </button>
-  <button on:click={blocks.gltf} disabled>
+  <button on:click={blocks.gltf}>
     Download GLTF
   </button>
 </tools>

@@ -4,7 +4,7 @@
   import {
     ACESFilmicToneMapping,
     Clock,
-    Object3D,
+    Group,
     PerspectiveCamera,
     Scene,
     sRGBEncoding,
@@ -20,7 +20,7 @@
 
   const camera = new PerspectiveCamera(70, 1, 0.1, 1000);
   const clock = new Clock();
-  const player = new Object3D();
+  const player = new Group();
   player.position.copy(initialPosition);
   player.add(camera);
   scene.add(player);

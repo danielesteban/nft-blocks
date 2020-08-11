@@ -117,19 +117,19 @@
 
   const exporter = new GLTFExporter();
   export const gltf = () => {
-    exporter.parse([...subchunks.values()].filter(({ meshes: { opaque, transparent } }) => (
-      opaque.visible || transparent.visible
-    )), (buffer) => {
+    const materials = Voxels.getExportableMaterials();
+    exporter.parse((
+      [...subchunks.values()]
+        .filter(({ meshes: { opaque, transparent } }) => (
+          opaque.visible || transparent.visible
+        ))
+        .map((mesh) => mesh.clone(materials))
+    ), (buffer) => {
       downloader.href = URL.createObjectURL(new Blob([buffer], { type: 'application/octet-stream' }));
       downloader.download = 'blocks.glb';
       downloader.click();
     }, {
       binary: true,
-      // @incomplete:
-      // GLTFExporter does not support DataTextures.
-      // Need to switch the materials textures to upscaled ImageBitmaps
-      // before enabling back texture embedding in the exporter.
-      embedImages: false,
     });
   };
 
