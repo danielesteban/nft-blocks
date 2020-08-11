@@ -12,7 +12,7 @@ contract BlocksToken is ERC721, Ownable {
   Counters.Counter private _tokenIds;
 
   uint128 private _mintingPrice = 0.005 ether;
-  mapping (uint256 => bytes32) private _hashes;
+  mapping (uint256 => string) private _hashes;
 
   constructor(string memory baseURI) public ERC721("Blocks", "BLOCKS") {
     _setBaseURI(baseURI);
@@ -22,7 +22,7 @@ contract BlocksToken is ERC721, Ownable {
   function hash(uint256 tokenId)
     public
     view
-    returns (bytes32)
+    returns (string memory)
   {
     require(
       _exists(tokenId),
@@ -32,7 +32,7 @@ contract BlocksToken is ERC721, Ownable {
   }
 
   // Create a new token
-  function mint(bytes32 tokenHash)
+  function mint(string memory tokenHash)
     public
     payable
     returns (uint256)

@@ -18,23 +18,30 @@
     if (file && file.name.lastIndexOf('.glb') === file.name.length - 4) {
       const reader = new FileReader();
       reader.onload = () => {
-        loader.parse(reader.result, '', (gltf) => {
-          const { player } = scene;
-          if (model) {
-            scene.remove(model);
-          }
-          model = gltf.scene;
-          bounds
-            .setFromObject(model)
-            .getCenter(player.position);
-          player.position.z = bounds.max.z + 4;
-          player.camera.rotation.set(0, 0, 0);
-          scene.add(model);
-        });
+        loader.parse(reader.result, '', onLoad);
       };
       reader.readAsArrayBuffer(file);
     }
   };
+
+  const onLoad = (gltf) => {
+    const { player } = scene;
+    if (model) {
+      scene.remove(model);
+    }
+    model = gltf.scene;
+    bounds
+      .setFromObject(model)
+      .getCenter(player.position);
+    player.position.z = bounds.max.z + 4;
+    player.camera.rotation.set(0, 0, 0);
+    scene.add(model);
+  };
+
+  loader.load(
+    'https://cloudflare-ipfs.com/ipfs/Qmd5iiYoUnm9sFLF4Ec3Vgn3kjoBMkGUpZBuxtBi92t1Qa',
+    onLoad
+  );
 </script>
 
 <svelte:window on:dragover={onDragOver} on:drop={onDrop} />

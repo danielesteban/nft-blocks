@@ -1,13 +1,8 @@
 const { balance, ether, expectRevert } = require('@openzeppelin/test-helpers');
-const crypto = require('crypto');
 
 const BlocksToken = artifacts.require('BlocksToken');
 
-const hash = (() => {
-  const hash = crypto.createHash('sha256');
-  hash.update('1234');
-  return `0x${hash.digest('hex')}`;
-})();
+const hash = 'Qmd5iiYoUnm9sFLF4Ec3Vgn3kjoBMkGUpZBuxtBi92t1Qa';
 
 contract('Blocks token', (accounts) => {
   it('Should have deployer as owner', async () => {

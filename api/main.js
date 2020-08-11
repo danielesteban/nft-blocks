@@ -3,6 +3,7 @@ const cors = require('cors');
 const express = require('express');
 const helmet = require('helmet');
 const mongoose = require('mongoose');
+const setupBlocksEndpoints = require('./endpoints/blocks');
 const setupUserEndpoints = require('./endpoints/user');
 
 const app = express();
@@ -10,10 +11,11 @@ app.use(helmet());
 app.use(cors());
 app.use(bodyParser.json());
 
-const server = app.listen(process.env.PORT || 8080, () => {
+const server = app.listen(process.env.PORT || 8081, () => {
   console.log(`Listening on port: ${server.address().port}`);
 });
 
+setupBlocksEndpoints(app);
 setupUserEndpoints(app);
 app.use((req, res) => res.status(404).end());
 // eslint-disable-next-line no-unused-vars
