@@ -3,11 +3,14 @@ import fs from 'fs';
 import path from 'path';
 import json from '@rollup/plugin-json';
 import livereload from 'rollup-plugin-livereload';
+import replace from '@rollup/plugin-replace';
 import resolve from '@rollup/plugin-node-resolve';
 import svelte from 'rollup-plugin-svelte';
 import { terser } from 'rollup-plugin-terser';
 
 const production = !process.env.ROLLUP_WATCH;
+
+require('dotenv').config();
 
 const serve = () => {
   let server;
@@ -55,6 +58,12 @@ export default [
         dedupe: ['svelte'],
       }),
       json(),
+      replace({
+        __API__: JSON.stringify(process.env.API || 'http://localhost:8081/'),
+        __IPFS__: JSON.stringify(process.env.IPFS_HOST || 'https://cloudflare-ipfs.com/ipfs/'),
+        __NetworkId__: JSON.stringify(process.env.NETWORK_ID),
+        __TokensAddress__: JSON.stringify(process.env.TOKENS_ADDRESS),
+      }),
       ...(production ? [terser()] : [serve(), livereload(path.join(__dirname, 'dist'))]),
     ],
   },

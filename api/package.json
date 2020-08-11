@@ -6,22 +6,20 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "ipfs": "jsipfs daemon",
     "start": "nodemon main.js"
   },
   "dependencies": {
-    "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-validator": "^6.6.1",
     "helmet": "^4.0.0",
-    "ipfs": "^0.48.2",
-    "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.9.28",
-    "multer": "^1.4.2",
-    "sharp": "^0.25.4"
+    "ipfs-http-client": "^45.0.0",
+    "multer": "^1.4.2"
   },
   "devDependencies": {
+    "ipfs": "^0.48.2",
     "nodemon": "^2.0.4"
   }
 }

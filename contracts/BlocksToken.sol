@@ -52,8 +52,17 @@ contract BlocksToken is ERC721, Ownable {
     return tokenId;
   }
 
+  // Get the current minting cost
+  function mintingCost()
+    public
+    view
+    returns (uint128)
+  {
+    return _mintingCost;
+  }
+
   // Update the minting cost
-  function updateMintingCost(uint128 cost)
+  function setMintingCost(uint128 cost)
     public
     onlyOwner
   {

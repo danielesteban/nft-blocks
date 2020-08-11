@@ -9,7 +9,7 @@
   <button on:click={blocks.save}>
     Export
   </button>
-  <button on:click={blocks.gltf}>
+  <button on:click={() => blocks.gltf(true)}>
     Download GLTF
   </button>
 </tools>

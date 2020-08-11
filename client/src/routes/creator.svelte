@@ -47,7 +47,7 @@
     <heading>
       Trading
     </heading>
-    <Trading />
+    <Trading blocks={blocks} />
   </ui>
   <viewport>
     <renderer>

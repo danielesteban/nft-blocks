@@ -3,7 +3,7 @@ const path = require('path');
 
 const BlocksToken = artifacts.require('BlocksToken');
 
-const baseURI = process.env.BASE_URI || 'http://localhost:8080/';
+const baseURI = process.env.BASE_URI || 'http://localhost:8081/token/';
 const mintingCost = process.env.MINTING_COST || '0';
 
 module.exports = async (deployer) => {
@@ -18,11 +18,11 @@ module.exports = async (deployer) => {
       .split('\n')
       .filter((line) => (
         line
-        && line.indexOf('CONTRACT_ADDRESS=') !== 0
+        && line.indexOf('TOKENS_ADDRESS=') !== 0
       ));
   } catch (e) {
     env = [];
   }
-  env.push(`CONTRACT_ADDRESS=${BlocksToken.address}`);
+  env.push(`TOKENS_ADDRESS=${BlocksToken.address}`);
   fs.writeFileSync(envPath, env.join('\n'));
 };

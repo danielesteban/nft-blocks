@@ -2,6 +2,12 @@
   "env": {
     "browser": true
   },
+  "globals": {
+    "__API__": "readonly",
+    "__IPFS__": "readonly",
+    "__NetworkId__": "readonly",
+    "__TokensAddress__": "readonly"
+  },
   "plugins": [
     "svelte3"
   ],

@@ -1,5 +1,4 @@
 const multer = require('multer');
-const User = require('../models/user');
 const ipfs = require('../services/ipfs');
 
 module.exports = (app) => {
@@ -10,7 +9,6 @@ module.exports = (app) => {
 
   app.post(
     '/upload',
-    // User.authenticate,
     upload.single('gltf'),
     (req, res) => {
       if (

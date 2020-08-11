@@ -1,11 +1,17 @@
-const IPFS = require('ipfs');
+const ipfsHttp = require('ipfs-http-client');
 
 let node;
-IPFS.create()
-  .then((instance) => {
-    node = instance;
+(() => {
+  const ipfs = ipfsHttp(process.env.IPFS_HOST || 'http://localhost:5002/');
+  return ipfs
+    .id()
+    .then(() => ipfs);
+})()
+  .then((ipfs) => {
+    console.log('connected to IPFS node');
+    node = ipfs;
   })
-  .catch(() => {});
+  .catch((e) => console.error('error connecting to IPFS node', e.message));
 
 module.exports = {
   addFile(buffer) {

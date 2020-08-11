@@ -21,13 +21,15 @@ contract('Blocks token', (accounts) => {
 
   it('Should allow to set the minting cost when owner', async () => {
     const instance = await BlocksToken.deployed();
-    await instance.updateMintingCost(cost);
+    await instance.setMintingCost(cost);
+    const stored = await instance.mintingCost();
+    assert.equal(stored, cost);
   });
 
   it('Should disallow to set the minting cost when not owner', async () => {
     const instance = await BlocksToken.deployed();
     await expectRevert(
-      instance.updateMintingCost(cost, { from: accounts[1] }),
+      instance.setMintingCost(cost, { from: accounts[1] }),
       'Ownable: caller is not the owner'
     );
   });

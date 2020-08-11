@@ -3,6 +3,7 @@
   import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
   import Renderer from '../components/renderer.svelte';
   import DesktopControls from '../components/desktopControls.svelte';
+  import { hashes, status } from '../stores/tokens';
 
   export let params;
 
@@ -40,15 +41,15 @@
     scene.add(model);
   };
 
-  $: params && params[0] && loader.load(
-    `https://cloudflare-ipfs.com/ipfs/${params[0]}`,
-    onLoad
-  );
+  $: tokenId = $status === 'ready' && params && params[0];
+  $: hash = tokenId && $hashes[tokenId];
+  $: tokenId && !hash && hashes.fetch(tokenId);
+  $: hash && loader.load(`${__IPFS__}${hash}`, onLoad);
 </script>
 
 <svelte:window on:dragover={onDragOver} on:drop={onDrop} />
 
-<viewer>
+<token>
   <DesktopControls
     bind:this={controls}
   />
@@ -56,10 +57,10 @@
     bind:scene={scene}
     controls={controls}
   />
-</viewer>
+</token>
 
 <style>
-  viewer {
+  token {
     display: block;
     height: 100%;
     position: relative;

@@ -116,21 +116,25 @@
   );
 
   const exporter = new GLTFExporter();
-  export const gltf = () => {
+  export const gltf = (download) => {
     const materials = Voxels.getExportableMaterials();
-    exporter.parse((
+    return new Promise((resolve) => exporter.parse((
       [...subchunks.values()]
         .filter(({ meshes: { opaque, transparent } }) => (
           opaque.visible || transparent.visible
         ))
         .map((mesh) => mesh.clone(materials))
     ), (buffer) => {
-      downloader.href = URL.createObjectURL(new Blob([buffer], { type: 'application/octet-stream' }));
-      downloader.download = 'blocks.glb';
-      downloader.click();
+      const blob = new Blob([buffer], { type: 'model/gltf-binary' });
+      if (download) {
+        downloader.href = URL.createObjectURL(blob);
+        downloader.download = 'blocks.glb';
+        downloader.click();
+      }
+      resolve(blob);
     }, {
       binary: true,
-    });
+    }));
   };
 
   onDestroy(() => {

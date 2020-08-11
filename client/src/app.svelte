@@ -1,6 +1,6 @@
 <script>
   import Creator from './routes/creator.svelte';
-  import Viewer from './routes/viewer.svelte';
+  import Token from './routes/token.svelte';
 
   // This should prolly be a service that just exports a store.
   // Maybe use the history module and a path-to-regex schema.
@@ -11,12 +11,15 @@
       decodeURIComponent(value.trim())
     ));
     switch (id) {
-      default:
+      case 'creator':
         route.component = Creator;
         break;
-      case 'viewer':
-        route.component = Viewer;
+      case 'token':
+        route.component = Token;
         break;
+      default:
+        location.hash = '#/creator';
+        return;
     }
     route.params = params.length ? params : undefined;
   };

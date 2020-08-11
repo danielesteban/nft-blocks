@@ -1,10 +1,63 @@
-<hash>
-  IPFS Hash: Not yet uploaded
-</hash>
+<script>
+  import { account, mint, status } from '../stores/tokens';
+
+  export let blocks;
+
+  let isMinting = false;
+  const onMint = () => {
+    isMinting = true;
+    blocks.gltf()
+      .then((blob) => (
+        mint(blob)
+      ))
+      .then((tokenId) => {
+        location.hash = `#/token/${tokenId}`;
+      })
+      .catch(() => {
+        isMinting = false;
+      });
+  };
+
+  const networkId = __NetworkId__;
+</script>
+
 <trading>
-  <button disabled>
-    Mint NFT token
-  </button>
+  {#if $status === 'ready'}
+    {#if $account}
+      <button
+        class="primary"
+        disabled={isMinting}
+        on:click={onMint}
+      >
+        {#if isMinting}
+          Minting...
+        {:else}
+          Mint NFT token
+        {/if}
+      </button>
+    {:else}
+      <button
+        class="primary"
+        on:click={() => account.request()}
+      >
+        Connect to wallet
+      </button>
+    {/if}
+  {:else}
+    <feedback>
+      {#if $status === 'unsupported'}
+        Web3 is not supported.
+        Please open in an Ethereum enabled browser
+        (or install <a href="https://metamask.io/" target="_blank">MetaMask</a>).
+      {:else if $status === 'wrongnetwork'}
+        Please switch to network id: "{networkId}"
+      {:else if $status === 'error'}
+        Error loading contract
+      {:else if $status === 'loading'}
+        Loading contract...
+      {/if}
+    </feedback>
+  {/if}
 </trading>
 
 <style>
@@ -20,9 +73,14 @@
     margin: 0 0.5rem;
   }
 
-  hash {
-    background: #111;
+  feedback {
     display: block;
-    padding: 0.5rem 1rem;
+    width: 100%;
+    padding: 0.25rem 0;
+    text-align: center;
+  }
+
+  feedback > a {
+    text-decoration: underline;
   }
 </style>
