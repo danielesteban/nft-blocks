@@ -6,7 +6,7 @@ const setupTokenEndpoints = require('./endpoints/token');
 
 const app = express();
 app.use(helmet());
-app.use(cors());
+app.use(cors(process.env.ORIGIN ? { origin: process.env.ORIGIN } : {}));
 app.use(bodyParser.json());
 
 const server = app.listen(process.env.PORT || 8081, () => {
