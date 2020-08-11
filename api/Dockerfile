@@ -13,7 +13,7 @@ RUN npm ci
 
 # Copy source
 COPY endpoints/ endpoints/
-COPY models/ models/
+COPY services/ services/
 COPY main.js .
 
 # De-escalate privileges

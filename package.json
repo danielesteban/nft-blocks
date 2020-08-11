@@ -26,9 +26,7 @@
     "rollup-plugin-svelte": "^5.2.3",
     "rollup-plugin-terser": "^7.0.0",
     "svelte": "^3.24.1",
-    "three": "^0.119.1",
-    "truffle-contract": "^4.0.31",
-    "web3": "^1.2.11"
+    "three": "^0.119.1"
   },
   "devDependencies": {
     "@openzeppelin/test-helpers": "^0.5.6",
