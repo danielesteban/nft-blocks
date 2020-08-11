@@ -11,11 +11,12 @@ contract BlocksToken is ERC721, Ownable {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
 
-  uint128 private _mintingPrice = 0.005 ether;
+  uint128 private _mintingCost;
   mapping (uint256 => string) private _hashes;
 
-  constructor(string memory baseURI) public ERC721("Blocks", "BLOCKS") {
+  constructor(string memory baseURI, uint128 mintingCost) public ERC721("Blocks", "BLOCKS") {
     _setBaseURI(baseURI);
+    _mintingCost = mintingCost;
   }
 
   // Get token hash
@@ -38,7 +39,7 @@ contract BlocksToken is ERC721, Ownable {
     returns (uint256)
   {
     require(
-      msg.value >= _mintingPrice || _msgSender() == owner(),
+      msg.value >= _mintingCost || _msgSender() == owner(),
       "BlocksToken: minting query without enough value"
     );
     uint256 tokenId = _tokenIds.current();
@@ -51,11 +52,11 @@ contract BlocksToken is ERC721, Ownable {
     return tokenId;
   }
 
-  // Set the minting price
-  function setMintingPrice(uint128 price)
+  // Update the minting cost
+  function updateMintingCost(uint128 cost)
     public
     onlyOwner
   {
-    _mintingPrice = price;
+    _mintingCost = cost;
   }
 }

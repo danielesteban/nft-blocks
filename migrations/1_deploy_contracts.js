@@ -3,8 +3,11 @@ const path = require('path');
 
 const BlocksToken = artifacts.require('BlocksToken');
 
+const baseURI = process.env.BASE_URI || 'http://localhost:8080/';
+const mintingCost = process.env.MINTING_COST || '0';
+
 module.exports = async (deployer) => {
-  await deployer.deploy(BlocksToken, process.env.BASE_URI || 'http://localhost:8080/');
+  await deployer.deploy(BlocksToken, baseURI, mintingCost);
   if (process.env.NODE_ENV !== 'production') {
     return;
   }
