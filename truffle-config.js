@@ -1,5 +1,8 @@
 const HDWalletProvider = require('@truffle/hdwallet-provider');
+
 require('dotenv').config();
+
+const { MNEMONICS, PROJECT_ID } = process.env;
 
 module.exports = {
   networks: {
@@ -8,26 +11,28 @@ module.exports = {
       port: 8545,
       network_id: '*',
     },
-    rinkeby: {
-      provider: new HDWalletProvider(
-        process.env.MNEMONICS,
-        `https://rinkeby.infura.io/v3/${process.env.PROJECT_ID}`
-      ),
-      network_id: 4,
-      gas: 5000000,
-      gasPrice: 5000000000, // 5 Gwei
-      skipDryRun: true,
-    },
-    ropsten: {
-      provider: new HDWalletProvider(
-        process.env.MNEMONICS,
-        `https://ropsten.infura.io/v3/${process.env.PROJECT_ID}`
-      ),
-      network_id: 3,
-      gas: 5000000,
-      gasPrice: 5000000000, // 5 Gwei
-      skipDryRun: true,
-    },
+    ...(MNEMONICS && PROJECT_ID ? {
+      rinkeby: {
+        provider: new HDWalletProvider(
+          process.env.MNEMONICS,
+          `https://rinkeby.infura.io/v3/${process.env.PROJECT_ID}`
+        ),
+        network_id: 4,
+        gas: 5000000,
+        gasPrice: 5000000000, // 5 Gwei
+        skipDryRun: true,
+      },
+      ropsten: {
+        provider: new HDWalletProvider(
+          process.env.MNEMONICS,
+          `https://ropsten.infura.io/v3/${process.env.PROJECT_ID}`
+        ),
+        network_id: 3,
+        gas: 5000000,
+        gasPrice: 5000000000, // 5 Gwei
+        skipDryRun: true,
+      },
+    } : {}),
   },
   mocha: {
     // timeout: 100000

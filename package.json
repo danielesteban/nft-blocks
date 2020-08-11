@@ -6,13 +6,18 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "api:start": "cd api && npm start",
     "client:build": "rollup -c client/rollup.config.js",
-    "client:serve": "sirv --dev -p 8080 client",
+    "client:serve": "sirv --dev -q -p 8080 client",
+    "client:start": "npm run client:build -- -w",
     "contracts:compile": "truffle compile",
     "contracts:migrate": "cross-env NODE_ENV=production truffle migrate --network development",
     "contracts:test": "truffle test",
     "ganache": "ganache-cli -p 8545 -q",
-    "start": "npm run client:build -- -w"
+    "ipfs": "jsipfs daemon",
+    "services": "npm-run-all --parallel ganache ipfs",
+    "start": "npm-run-all --parallel api:start client:start",
+    "postinstall": "cd api && npm install"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^3.1.0",
@@ -36,6 +41,8 @@
     "eslint-plugin-import": "^2.21.2",
     "eslint-plugin-svelte3": "^2.7.3",
     "ganache-cli": "^6.10.1",
+    "ipfs": "^0.48.2",
+    "npm-run-all": "^4.1.5",
     "sirv-cli": "^1.0.5",
     "truffle": "^5.1.39"
   }
