@@ -24,7 +24,9 @@
   player.position.copy(initialPosition);
   player.add(camera);
   scene.add(player);
-  $: controls && controls.setup({ camera, player });
+  player.camera = camera;
+  scene.player = player;
+  $: controls && controls.setup(player);
 
   scene.onBeforeRender = (renderer, scene, camera) => {
     if (controls) {

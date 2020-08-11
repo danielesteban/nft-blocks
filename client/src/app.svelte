@@ -1,5 +1,6 @@
 <script>
   import Creator from './routes/creator.svelte';
+  import Viewer from './routes/viewer.svelte';
   import Welcome from './components/welcome.svelte';
 
   // This should prolly be a service that just exports a store.
@@ -13,6 +14,9 @@
     switch (id) {
       default:
         route.component = Creator;
+        break;
+      case 'viewer':
+        route.component = Viewer;
         break;
     }
     route.params = params.length ? params : undefined;

@@ -102,8 +102,8 @@
     document.body.requestPointerLock();
   };
 
-  export const setup = ({ camera }) => {
-    camera.position.y = 1.6;
+  export const setup = (player) => {
+    player.camera.position.y = 1.6;
   };
 
   const onBlur = () => {

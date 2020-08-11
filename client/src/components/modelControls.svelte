@@ -19,8 +19,8 @@
     isActive = true;
   };
 
-  export const setup = ({ camera, player }) => {
-    camera.position.z = 2.5;
+  export const setup = (player) => {
+    player.camera.position.z = 2.5;
     player.rotation.y = Math.PI * 0.25;
     player.rotation.x = Math.PI * -0.25;
     player.rotation.order = 'YXZ';
