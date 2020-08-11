@@ -4,6 +4,8 @@
   import Renderer from '../components/renderer.svelte';
   import DesktopControls from '../components/desktopControls.svelte';
 
+  export let params;
+
   let controls;
   let model;
   let scene;
@@ -38,8 +40,8 @@
     scene.add(model);
   };
 
-  loader.load(
-    'https://cloudflare-ipfs.com/ipfs/Qmd5iiYoUnm9sFLF4Ec3Vgn3kjoBMkGUpZBuxtBi92t1Qa',
+  $: params && params[0] && loader.load(
+    `https://cloudflare-ipfs.com/ipfs/${params[0]}`,
     onLoad
   );
 </script>
