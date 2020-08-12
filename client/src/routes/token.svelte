@@ -50,7 +50,7 @@
     isLoading = false;
   };
 
-  $: tokenId = ($status === 'ready' || $status === 'unsupported') && params && params[0];
+  $: tokenId = $status !== 'loading' && params && params[0];
   $: hash = tokenId && $hashes[tokenId];
   $: tokenId && !hash && hashes.fetch(tokenId);
   $: hash && load(hash);
