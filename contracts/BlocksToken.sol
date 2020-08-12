@@ -11,12 +11,31 @@ contract BlocksToken is ERC721, Ownable {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
 
+  string private _contractURI;
   uint128 private _mintingCost;
   mapping (uint256 => string) private _hashes;
 
-  constructor(string memory baseURI, uint128 mintingCost) public ERC721("nft-blocks", "BLOCKS") {
+  constructor(
+    string memory name,
+    string memory symbol,
+    string memory baseURI,
+    string memory contractURI,
+    uint128 mintingCost
+  )
+    public ERC721(name, symbol)
+  {
     _setBaseURI(baseURI);
+    _contractURI = contractURI;
     _mintingCost = mintingCost;
+  }
+
+  // Get the contract metadata
+  function contractURI()
+    public
+    view
+    returns (string memory)
+  {
+    return _contractURI;
   }
 
   // Get token hash

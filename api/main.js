@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const express = require('express');
 const helmet = require('helmet');
+const setupContractEndpoints = require('./endpoints/contract');
 const setupTokenEndpoints = require('./endpoints/token');
 
 const client = process.env.CLIENT || 'http://localhost:8080/';
@@ -23,6 +24,7 @@ const server = app.listen(process.env.PORT || 8081, () => {
   console.log(`Listening on port: ${server.address().port}`);
 });
 
+setupContractEndpoints(app);
 setupTokenEndpoints(app);
 app.use((req, res) => res.status(404).end());
 // eslint-disable-next-line no-unused-vars
