@@ -19,6 +19,13 @@
   };
 
   const networkId = __NetworkId__;
+  const networkNames = {
+    1: 'Main Ethereum Network',
+    3: 'Ropsten Test Network',
+    4: 'Rinkeby Test Network',
+    5: 'Goerli Test Network',
+    42: 'Kovan Test Network',
+  };
 </script>
 
 <trading>
@@ -50,7 +57,7 @@
         Please open in an Ethereum enabled browser
         (or install <a href="https://metamask.io/" target="_blank">MetaMask</a>).
       {:else if $status === 'wrongnetwork'}
-        Please switch to network id: "{networkId}"
+        Please switch to: "{networkNames[networkId] || `Network ${networkId}`}"
       {:else if $status === 'error'}
         Error loading contract
       {:else if $status === 'loading'}
