@@ -10,6 +10,9 @@
   let controls;
   let model;
   let scene;
+  let support;
+  let enterAR;
+  let enterVR;
 
   const onDragOver = (e) => e.preventDefault();
 
@@ -35,19 +38,41 @@
     loader.load(`${__IPFS__}${hash}`, onLoad);
   };
 
+  let isAR = false;
+  const resetView = () => {
+    const { player } = scene;
+    if (!model) {
+      return;
+    }
+    const scale = isAR ? 0.1 : 1;
+    const offset = isAR ? 0.5 : 4;
+    model.scale.setScalar(scale);
+    bounds
+      .setFromObject(model)
+      .getCenter(player.position);
+    player.position.z = bounds.max.z + offset;
+    player.camera.rotation.set(0, 0, 0);
+  };
+
   const onLoad = (gltf) => {
     const { player } = scene;
     if (model) {
       scene.remove(model);
     }
     model = gltf.scene;
-    bounds
-      .setFromObject(model)
-      .getCenter(player.position);
-    player.position.z = bounds.max.z + 4;
-    player.camera.rotation.set(0, 0, 0);
     scene.add(model);
     isLoading = false;
+    resetView();
+  };
+
+  const onEnterAR = () => {
+    isAR = true;
+    resetView();
+  };
+  
+  const onExitAR = () => {
+    isAR = false;
+    resetView();
   };
 
   $: tokenId = $status !== 'loading' && params && params[0];
@@ -64,8 +89,23 @@
   />
   <Renderer
     bind:scene={scene}
+    bind:support={support}
+    bind:enterAR={enterAR}
+    bind:enterVR={enterVR}
+    on:enterAR={onEnterAR}
+    on:exitAR={onExitAR}
     controls={controls}
   />
+  {#if support && (support.ar || support.vr)}
+    <actions>
+      {#if support.ar}
+        <button on:click={enterAR}>EnterAR</button>
+      {/if}
+      {#if support.vr}
+        <button on:click={enterVR}>EnterVR</button>
+      {/if}
+    </actions>
+  {/if}
   {#if isLoading || $status === 'loading' || (tokenId && !hash)}
     <feedback>
       Loading blocks...
@@ -79,6 +119,13 @@
     height: 100%;
     position: relative;
     overflow: hidden;
+  }
+
+  actions {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translate(-50%, 0);
   }
 
   feedback {

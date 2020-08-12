@@ -1,6 +1,6 @@
 
 <script>
-  import { onDestroy, onMount } from 'svelte';
+  import { createEventDispatcher, onDestroy, onMount } from 'svelte';
   import {
     ACESFilmicToneMapping,
     Clock,
@@ -11,9 +11,12 @@
     WebGLRenderer,
   } from 'three';
 
+  const dispatch = createEventDispatcher();
+
   export let initialPosition = { x: 0, y: 0, z: 0 };
   export let controls = undefined;
   export let scene = new Scene();
+  export let support = { ar: false, vr: false };
   let canvas;
   let renderer;
   let viewport;
@@ -35,6 +38,7 @@
         camera,
         player,
         viewport,
+        xr: renderer.xr,
       });
     }
   };
@@ -47,6 +51,7 @@
   onMount(() => {
     renderer = new WebGLRenderer({
       canvas,
+      alpha: true,
       antialias: true,
       stencil: false,
       powerPreference: 'high-performance',
@@ -56,6 +61,18 @@
     renderer.setPixelRatio(window.devicePixelRatio || 1);
     renderer.setAnimationLoop(onAnimationTick);
     requestAnimationFrame(onResize);
+
+    if (navigator.xr) {
+      renderer.xr.enabled = true;
+      navigator.xr.isSessionSupported('immersive-ar')
+        .then((supported) => {
+          support = { ...support, ar: !!supported };
+        });
+      navigator.xr.isSessionSupported('immersive-vr')
+        .then((supported) => {
+          support =  { ...support, vr: !!supported };
+        });
+    }
   });
 
   const onAnimationTick = () => {
@@ -79,6 +96,39 @@
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
     onAnimationTick();
+  };
+
+  const requestSession = (mode, init = {}) => {
+    if (renderer.xr.isPresenting) {
+      return;
+    }
+    navigator.xr.requestSession(`immersive-${mode}`, init)
+      .then((session) => {
+        if (mode === 'ar') {
+          renderer.xr.setReferenceSpaceType('local');
+        }
+        renderer.xr.setSession(session);
+        dispatch(`enter${mode.toUpperCase()}`);
+        session.addEventListener('end', () => {
+          renderer.xr.setSession(null);
+          dispatch(`exit${mode.toUpperCase()}`);
+        });
+      })
+      .catch(() => {});
+  };
+
+  export const enterAR = () => {
+    if (support.ar) {
+      requestSession('ar')
+    }
+  };
+
+  export const enterVR = (init = {}) => {
+    if (support.vr) {
+      requestSession('vr', {
+        optionalFeatures: ['local-floor', 'bounded-floor'],
+      })
+    }
   };
 </script>
 

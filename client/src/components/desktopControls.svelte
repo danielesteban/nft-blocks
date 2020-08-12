@@ -43,8 +43,13 @@
     camera,
     player,
     viewport,
+    xr,
   }) => {
     if (!isLocked) {
+      return;
+    }
+    if (xr.isPresenting) {
+      document.exitPointerLock();
       return;
     }
     if (pointer.x !== 0 || pointer.y !== 0) {
