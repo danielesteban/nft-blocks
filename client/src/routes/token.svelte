@@ -99,10 +99,10 @@
   {#if support && (support.ar || support.vr)}
     <actions>
       {#if support.ar}
-        <button on:click={enterAR}>EnterAR</button>
+        <button on:click={enterAR}>Enter AR</button>
       {/if}
       {#if support.vr}
-        <button on:click={enterVR}>EnterVR</button>
+        <button on:click={enterVR}>Enter VR</button>
       {/if}
     </actions>
   {/if}
