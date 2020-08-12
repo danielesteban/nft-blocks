@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
 
   import ColorPicker from './colorPicker.svelte';
-  import ModelControls from './modelControls.svelte';
+  import ModelControls from './controls/model.svelte';
   import Pixels from './pixels.svelte';
   import Renderer from './renderer.svelte';
   import Block from '../renderables/block';

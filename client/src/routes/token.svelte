@@ -2,7 +2,8 @@
   import { Box3 } from 'three';
   import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
   import Renderer from '../components/renderer.svelte';
-  import DesktopControls from '../components/desktopControls.svelte';
+  import DesktopControls from '../components/controls/desktop.svelte';
+  import VRControls from '../components/controls/vr.svelte';
   import { hashes, list, status } from '../stores/tokens';
 
   export let params;
@@ -14,12 +15,15 @@
   let enterAR;
   let enterVR;
 
-  const onDragOver = (e) => e.preventDefault();
-
   const bounds = new Box3();
   const loader = new GLTFLoader();
 
   let isLoading = false;
+  let isAR = false;
+  let isVR = false;
+
+  const onDragOver = (e) => e.preventDefault();
+
   const onDrop = (e) => {
     e.preventDefault();
     const [file] = e.dataTransfer.files;
@@ -38,7 +42,11 @@
     loader.load(`${__IPFS__}${hash}`, onLoad);
   };
 
-  let isAR = false;
+  $: tokenId = $status !== 'loading' && params && params[0];
+  $: hash = tokenId && $hashes[tokenId];
+  $: tokenId && !hash && hashes.fetch(tokenId);
+  $: hash && load(hash);
+
   const resetView = () => {
     const { player } = scene;
     if (!model) {
@@ -75,18 +83,27 @@
     resetView();
   };
 
-  $: tokenId = $status !== 'loading' && params && params[0];
-  $: hash = tokenId && $hashes[tokenId];
-  $: tokenId && !hash && hashes.fetch(tokenId);
-  $: hash && load(hash);
+  const onEnterVR = () => {
+    isVR = true;
+  };
+  
+  const onExitVR = () => {
+    isVR = false;
+  };
 </script>
 
 <svelte:window on:dragover={onDragOver} on:drop={onDrop} />
 
 <token>
-  <DesktopControls
-    bind:this={controls}
-  />
+  {#if isVR}
+    <VRControls
+      bind:this={controls}
+    />
+  {:else if !isAR}
+    <DesktopControls
+      bind:this={controls}
+    />
+  {/if}
   <Renderer
     bind:scene={scene}
     bind:support={support}
@@ -94,6 +111,8 @@
     bind:enterVR={enterVR}
     on:enterAR={onEnterAR}
     on:exitAR={onExitAR}
+    on:enterVR={onEnterVR}
+    on:exitVR={onExitVR}
     controls={controls}
   />
   {#if support && (support.ar || support.vr)}

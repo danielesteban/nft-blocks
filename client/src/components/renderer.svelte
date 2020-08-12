@@ -34,11 +34,10 @@
   scene.onBeforeRender = (renderer, scene, camera) => {
     if (controls) {
       controls.onAnimationTick({
-        delta: renderer.animation.delta,
+        animation: renderer.animation,
         camera,
         player,
         viewport,
-        xr: renderer.xr,
       });
     }
   };
@@ -136,6 +135,6 @@
 <canvas
   bind:this={canvas}
   on:mousedown={() => (
-    controls && !renderer.xr.isPresenting && controls.request()
+    controls && controls.request && controls.request()
   )}
 />

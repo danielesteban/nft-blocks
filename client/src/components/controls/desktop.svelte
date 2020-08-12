@@ -39,17 +39,12 @@
   });
 
   export const onAnimationTick = ({
-    delta,
+    animation: { delta },
     camera,
     player,
     viewport,
-    xr,
   }) => {
     if (!isLocked) {
-      return;
-    }
-    if (xr.isPresenting) {
-      document.exitPointerLock();
       return;
     }
     if (pointer.x !== 0 || pointer.y !== 0) {
@@ -108,7 +103,8 @@
   };
 
   export const setup = (player) => {
-    player.camera.position.y = 1.6;
+    player.camera.position.set(0, 1.6, 0);
+    player.camera.rotation.set(0, 0, 0);
   };
 
   const onBlur = () => {

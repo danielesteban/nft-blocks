@@ -2,7 +2,7 @@
   import { onDestroy } from 'svelte';
   import { Vector3 } from 'three';
   import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
-  import DesktopControls from './desktopControls.svelte';
+  import DesktopControls from './controls/desktop.svelte';
   import Help from './help.svelte';
   import Renderer from './renderer.svelte';
   import Voxels from '../renderables/voxels';
