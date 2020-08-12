@@ -38,7 +38,7 @@ module.exports = (app) => {
           res.json({
             name: `Blocks #${id}`,
             hash,
-            external_url: `${app.get('client')}/#/token/${id}`,
+            external_url: `${app.get('client')}#/token/${id}`,
           })
         ))
         .catch(() => res.status(404).end());

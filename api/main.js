@@ -5,10 +5,18 @@ const express = require('express');
 const helmet = require('helmet');
 const setupTokenEndpoints = require('./endpoints/token');
 
+const client = process.env.CLIENT || 'http://localhost:8080/';
+const origin = (() => {
+  let origin = new URL(client);
+  origin.pathname = '/';
+  origin = origin.toString();
+  return origin.substr(0, origin.length - 1);
+})();
+
 const app = express();
-app.set('client', process.env.CLIENT || 'http://localhost:8080');
+app.set('client', client);
 app.use(helmet());
-app.use(cors({ origin: app.get('client') }));
+app.use(cors({ origin }));
 app.use(bodyParser.json());
 
 const server = app.listen(process.env.PORT || 8081, () => {
