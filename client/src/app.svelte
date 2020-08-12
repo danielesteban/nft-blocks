@@ -18,7 +18,7 @@
         route.component = Token;
         break;
       default:
-        location.hash = '#/creator';
+        location.replace('#/creator');
         return;
     }
     route.params = params.length ? params : undefined;
