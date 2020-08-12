@@ -14,7 +14,7 @@ contract BlocksToken is ERC721, Ownable {
   uint128 private _mintingCost;
   mapping (uint256 => string) private _hashes;
 
-  constructor(string memory baseURI, uint128 mintingCost) public ERC721("Blocks", "BLOCKS") {
+  constructor(string memory baseURI, uint128 mintingCost) public ERC721("nft-blocks", "BLOCKS") {
     _setBaseURI(baseURI);
     _mintingCost = mintingCost;
   }
