@@ -11,18 +11,22 @@ module.exports = async (deployer) => {
   if (process.env.NODE_ENV !== 'production') {
     return;
   }
-  const envPath = path.join(__dirname, '..', '.env');
-  let env;
-  try {
-    env = fs.readFileSync(envPath, 'utf8')
-      .split('\n')
-      .filter((line) => (
-        line
-        && line.indexOf('TOKENS_ADDRESS=') !== 0
-      ));
-  } catch (e) {
-    env = [];
-  }
-  env.push(`TOKENS_ADDRESS=${BlocksToken.address}`);
-  fs.writeFileSync(envPath, env.join('\n'));
+  [
+    path.join(__dirname, '..', '.env'),
+    path.join(__dirname, '..', 'api', '.env'),
+  ].forEach((envPath) => {
+    let env;
+    try {
+      env = fs.readFileSync(envPath, 'utf8')
+        .split('\n')
+        .filter((line) => (
+          line
+          && line.indexOf('TOKENS_ADDRESS=') !== 0
+        ));
+    } catch (e) {
+      env = [];
+    }
+    env.push(`TOKENS_ADDRESS=${BlocksToken.address}`);
+    fs.writeFileSync(envPath, env.join('\n'));
+  });
 };

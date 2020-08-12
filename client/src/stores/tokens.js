@@ -71,17 +71,66 @@ export const hashes = (() => {
   const { subscribe, update } = writable({});
   return {
     subscribe,
-    fetch: (tokenId) => {
-      if (!contract) {
-        return Promise.reject();
-      }
-      return contract.hash(tokenId)
+    fetch: (tokenId) => (
+      (contract ? (
+        contract.hash(tokenId)
+      ) : (
+        fetch(`${__API__}token/${tokenId}`)
+          .then((res) => {
+            if (res.status !== 200) {
+              throw new Error();
+            }
+            return res.json();
+          })
+          .then(({ hash }) => hash)
+      ))
         .then((hash) => (
           update((state) => ({
             ...state,
             [tokenId]: hash,
           }))
+        ))
+    ),
+  };
+})();
+
+export const list = (() => {
+  const { subscribe, set } = writable();
+  return {
+    subscribe,
+    fetch: (account) => {
+      set();
+      (contract ? (
+        (account ? (
+          contract.balanceOf(account)
+        ) : (
+          contract.totalSupply()
+        ))
+          .then((count) => Promise.all(
+            [...Array(count.toNumber())].map((v, i) => (
+              account ? (
+                contract.tokenOfOwnerByIndex(account, count - 1 - i)
+              ) : (
+                contract.tokenByIndex(count - 1 - i)
+              )
+            ))
+          ))
+          .then((list) => list.map((tokenId) => tokenId.toString()))
+      ) : (
+        fetch(`${__API__}tokens`)
+          .then((res) => {
+            if (res.status !== 200) {
+              throw new Error();
+            }
+            return res.json();
+          })
+      ))
+        .then((list) => (
+          set(list)
         ));
+    },
+    reset() {
+      set();
     },
   };
 })();
@@ -104,9 +153,13 @@ export const mint = (gltf) => {
       return res.json();
     })
     .then((hash) => (
-      contract.mint(hash, { from: $account, value: web3.utils.toWei('0.005', 'ether') })
-        .then(({ logs: [{ args: { tokenId } }] }) => (
-          tokenId.toString()
+      contract.mintingCost()
+        .then((value) => (
+          contract.mint(hash, { from: $account, value })
+            .then(({ logs: [{ args: { tokenId } }] }) => {
+              list.reset();
+              return tokenId.toString();
+            })
         ))
     ));
 };

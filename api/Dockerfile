@@ -12,6 +12,7 @@ COPY package-lock.json .
 RUN npm ci
 
 # Copy source
+COPY artifacts/ artifacts/
 COPY endpoints/ endpoints/
 COPY services/ services/
 COPY main.js .
