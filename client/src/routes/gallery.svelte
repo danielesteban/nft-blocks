@@ -1,6 +1,7 @@
 <script>
   import { list } from '../stores/tokens';
   import Token from '../components/token.svelte';
+  import Welcome from '../components/welcome.svelte';
 
   $: !$list && list.fetch();
 </script>
@@ -27,6 +28,8 @@
     </a>
   </create>
 </gallery>
+
+<Welcome />
 
 <style>
   gallery {
