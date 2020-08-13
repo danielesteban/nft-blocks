@@ -1,8 +1,8 @@
 <script>
-  let visible = true;
+  import visible from '../stores/welcome';
 </script>
 
-<overlay class:visible={visible} on:click={() => { visible = false; }}>
+<overlay class:visible={$visible} on:click={() => { $visible = false; }}>
   <welcome>
     <h3>Welcome, my dudes!</h3>
     <p>
