@@ -43,7 +43,7 @@
         camera,
         player,
         viewport,
-        xr,
+        xr: renderer.xr,
       });
     }
   };
