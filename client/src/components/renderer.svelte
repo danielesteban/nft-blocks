@@ -29,7 +29,12 @@
   scene.add(player);
   player.camera = camera;
   scene.player = player;
-  $: controls && controls.setup(player);
+
+  let lastControls;
+  $: if (controls != lastControls) {
+    lastControls = controls;
+    controls.setup({ player, renderer });
+  }
 
   scene.onBeforeRender = (renderer, scene, camera) => {
     if (controls) {
