@@ -135,6 +135,32 @@ export const list = (() => {
   };
 })();
 
+export const owners = (() => {
+  const { subscribe, update } = writable({});
+  return {
+    subscribe,
+    fetch: (tokenId) => (
+      (contract ? (
+        contract.ownerOf(tokenId)
+      ) : (
+        fetch(`${__API__}token/${tokenId}/owner`)
+          .then((res) => {
+            if (res.status !== 200) {
+              throw new Error();
+            }
+            return res.json();
+          })
+      ))
+        .then((owner) => (
+          update((state) => ({
+            ...state,
+            [tokenId]: owner,
+          }))
+        ))
+    ),
+  };
+})();
+
 export const mint = (gltf) => {
   const $account = get(account);
   if (!contract || !$account) {

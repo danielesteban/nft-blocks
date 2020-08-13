@@ -70,6 +70,26 @@ module.exports = (app) => {
     }
   );
 
+  app.get(
+    '/token/:id/owner',
+    param('id')
+      .isInt()
+      .toInt(),
+    (req, res) => {
+      if (!validationResult(req).isEmpty()) {
+        res.status(422).end();
+        return;
+      }
+      const { id } = req.params;
+      tokens
+        .owner(id)
+        .then((owner) => (
+          res.json(owner)
+        ))
+        .catch(() => res.status(404).end());
+    }
+  );
+
   app.post(
     '/upload',
     upload.single('gltf'),

@@ -43,4 +43,10 @@ module.exports = {
     }
     return contract.hash(tokenId);
   },
+  owner(tokenId) {
+    if (!contract) {
+      return Promise.reject();
+    }
+    return contract.ownerOf(tokenId).then((tokenId) => tokenId.toString());
+  },
 };

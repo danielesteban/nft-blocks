@@ -5,7 +5,12 @@
   import DesktopControls from '../components/controls/desktop.svelte';
   import VRControls from '../components/controls/vr.svelte';
   import Renderer from '../components/renderer.svelte';
-  import { hashes, list, status } from '../stores/tokens';
+  import {
+    hashes,
+    list,
+    owners,
+    status,
+  } from '../stores/tokens';
 
   export let params;
 
@@ -48,6 +53,16 @@
   $: hash = tokenId && $hashes[tokenId];
   $: tokenId && !hash && hashes.fetch(tokenId);
   $: hash && load(hash);
+
+  $: owner = tokenId && $owners[tokenId];
+  $: tokenId && !owner && owners.fetch(tokenId);
+  $: formattedId = tokenId && `#${('000000' + tokenId).slice(-6)}`;
+  $: formattedOwner = owner && `${owner.slice(0, 6).toUpperCase()}`;
+
+  const openseaLink = (__NetworkId__ === '1' || __NetworkId__ === '4') && (
+    `https://${__NetworkId__ === '4' ? 'rinkeby.' : ''}opensea.io/assets/${__TokensAddress__}/{id}`
+  );
+  $: opensea = openseaLink && tokenId && openseaLink.replace(/{id}/, tokenId);
 
   const resetView = () => {
     const { player } = scene;
@@ -125,6 +140,25 @@
     controls={controls}
     alpha
   />
+  {#if tokenId}
+    <info>
+      <id>
+        Blocks {formattedId}
+      </id>
+      <owner>
+        Owned by {owner ? formattedOwner : '...'}
+      </owner>
+      {#if opensea}
+        <a
+          href="{opensea}"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          View on OpenSea
+        </a>
+      {/if}
+    </info>
+  {/if}
   {#if support && (support.ar || support.vr) && !isLocked}
     <actions>
       {#if support.ar}
@@ -149,6 +183,27 @@
     height: 100%;
     position: relative;
     overflow: hidden;
+  }
+
+  info {
+    display: block;
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+  }
+
+  info > id {
+    display: block;
+  }
+
+  info > owner {
+    display: block;
+  }
+
+  info > a {
+    color: #393;
+    text-decoration: underline;
+    font-weight: 700;
   }
 
   actions {
