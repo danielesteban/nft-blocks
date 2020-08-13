@@ -12,6 +12,7 @@
   export let types;
 
   let controls;
+  let isLocked;
   let scene;
   let sunlight = 0.5;
 
@@ -208,6 +209,7 @@
 
 <DesktopControls
   bind:this={controls}
+  bind:isLocked={isLocked}
   on:buttons={onButtons}
 />
 <Renderer
@@ -215,24 +217,27 @@
   controls={controls}
   initialPosition={initialPosition}
 />
-<crosshair>
-  <div></div>
-  <div></div>
-</crosshair>
 
-<actions on:click={(e) => e.preventDefault()}>
-  <label>
-    Sunlight:
-    <input
-      type="range"
-      bind:value={sunlight}
-      min={0}
-      max={1}
-      step={0.01}
-    />
-  </label>
-</actions>
-<Help />
+{#if !isLocked}
+  <actions on:click={(e) => e.preventDefault()}>
+    <label>
+      Sunlight:
+      <input
+        type="range"
+        bind:value={sunlight}
+        min={0}
+        max={1}
+        step={0.01}
+      />
+    </label>
+  </actions>
+  <Help />
+{:else}
+  <crosshair>
+    <div></div>
+    <div></div>
+  </crosshair>
+{/if}
 
 <style>
   crosshair {

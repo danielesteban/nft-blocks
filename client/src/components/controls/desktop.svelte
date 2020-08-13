@@ -9,6 +9,8 @@
 
   const dispatch = createEventDispatcher();
 
+  export let isLocked = false;
+
   const aux = {
     euler: new Euler(0, 0, 0, 'YXZ'),
     direction: new Vector3(),
@@ -16,7 +18,7 @@
     right: new Vector3(),
     worldUp: new Vector3(0, 1, 0),
   };
-  let isLocked = false;
+
   const buttons = {
     primary: false,
     secondary: false,

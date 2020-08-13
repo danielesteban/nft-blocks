@@ -9,6 +9,7 @@
   export let params;
 
   let controls;
+  let isLocked;
   let model;
   let scene;
   let support;
@@ -102,6 +103,7 @@
   {:else if !isAR}
     <DesktopControls
       bind:this={controls}
+      bind:isLocked={isLocked}
     />
   {/if}
   <Renderer
@@ -115,7 +117,7 @@
     on:exitVR={onExitVR}
     controls={controls}
   />
-  {#if support && (support.ar || support.vr)}
+  {#if support && (support.ar || support.vr) && !isLocked}
     <actions>
       {#if support.ar}
         <button on:click={enterAR}>Enter AR</button>
@@ -142,9 +144,17 @@
 
   actions {
     position: absolute;
+    display: flex;
     bottom: 1rem;
     left: 50%;
     transform: translate(-50%, 0);
+  }
+
+  actions > button {
+    font-size: 1.5rem;
+    padding: 1rem 2rem;
+    margin: 0 0.5rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   }
 
   feedback {
