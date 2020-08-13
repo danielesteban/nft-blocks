@@ -109,15 +109,13 @@
     }
     navigator.xr.requestSession(`immersive-${mode}`, init)
       .then((session) => {
-        if (mode === 'ar') {
-          renderer.xr.setReferenceSpaceType('local');
-        }
-        renderer.xr.setSession(session);
-        dispatch(`enter${mode.toUpperCase()}`);
         session.addEventListener('end', () => {
           renderer.xr.setSession(null);
           dispatch(`exit${mode.toUpperCase()}`);
         });
+        renderer.xr.setReferenceSpaceType(mode === 'ar' ? 'local' : 'local-floor');
+        renderer.xr.setSession(session);
+        dispatch(`enter${mode.toUpperCase()}`);
       })
       .catch(() => {});
   };
@@ -128,7 +126,7 @@
     }
   };
 
-  export const enterVR = (init = {}) => {
+  export const enterVR = () => {
     if (support.vr) {
       requestSession('vr', {
         optionalFeatures: ['local-floor', 'bounded-floor'],

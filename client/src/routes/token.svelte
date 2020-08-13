@@ -1,9 +1,10 @@
 <script>
   import { Box3 } from 'three';
   import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-  import Renderer from '../components/renderer.svelte';
+  import ARControls from '../components/controls/ar.svelte';
   import DesktopControls from '../components/controls/desktop.svelte';
   import VRControls from '../components/controls/vr.svelte';
+  import Renderer from '../components/renderer.svelte';
   import { hashes, list, status } from '../stores/tokens';
 
   export let params;
@@ -60,7 +61,6 @@
       .setFromObject(model)
       .getCenter(player.position);
     player.position.z = bounds.max.z + offset;
-    player.camera.rotation.set(0, 0, 0);
   };
 
   const onLoad = (gltf) => {
@@ -96,11 +96,15 @@
 <svelte:window on:dragover={onDragOver} on:drop={onDrop} />
 
 <token>
-  {#if isVR}
+  {#if isAR}
+    <ARControls
+      bind:this={controls}
+    />
+  {:else if isVR}
     <VRControls
       bind:this={controls}
     />
-  {:else if !isAR}
+  {:else}
     <DesktopControls
       bind:this={controls}
       bind:isLocked={isLocked}
