@@ -6,7 +6,7 @@
   <welcome>
     <h3>Welcome, my dudes!</h3>
     <p>
-      This is an beta test of the cryptoart tool and gallery I'm creating.
+      This is a beta test of the cryptoart tool and gallery I'm creating.
     </p>
     <p>
       It features a <a href="#/creator">voxels editor</a> to create small dioramas/destinations which then you can mint into immutable NFT Tokens and trade them to make some money.
