@@ -2,6 +2,7 @@ const { param, validationResult } = require('express-validator');
 const multer = require('multer');
 const ipfs = require('../services/ipfs');
 const tokens = require('../services/tokens');
+const screenshots = require('../services/screenshots');
 
 module.exports = (app) => {
   const upload = multer({
@@ -38,8 +39,32 @@ module.exports = (app) => {
           res.json({
             name: `Blocks #${id}`,
             hash,
+            image: `${app.get('url')}token/${id}/image`,
             external_url: `${app.get('client')}#/token/${id}`,
           })
+        ))
+        .catch(() => res.status(404).end());
+    }
+  );
+
+  app.get(
+    '/token/:id/image',
+    param('id')
+      .isInt()
+      .toInt(),
+    (req, res) => {
+      if (!validationResult(req).isEmpty()) {
+        res.status(422).end();
+        return;
+      }
+      const { id } = req.params;
+      tokens
+        .hash(id)
+        .then((hash) => (
+          screenshots(hash)
+        ))
+        .then((png) => (
+          res.type('image/png').send(png)
         ))
         .catch(() => res.status(404).end());
     }
@@ -58,11 +83,11 @@ module.exports = (app) => {
       }
       const gltf = req.file.buffer;
       ipfs
-        .addFile(Buffer.from(gltf))
+        .add(Buffer.from(gltf))
         .then((hash) => (
           res.json(hash)
         ))
-        .catch(() => res.status(500).end());
+        .catch((e) => {console.log(e); res.status(500).end(); });
     }
   );
 };

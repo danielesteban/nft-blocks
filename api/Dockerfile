@@ -1,5 +1,12 @@
 FROM node:erbium
 
+# Install puppeteer dependencies
+RUN apt-get -qq update && \
+    apt-get -qq install --no-install-recommends \
+    libgtk-3-0 libxtst6 libxss1 libnss3 libasound2 > /dev/null && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set production env
 ENV NODE_ENV production
 
 # Create working directory

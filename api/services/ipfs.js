@@ -1,4 +1,5 @@
 const ipfsHttp = require('ipfs-http-client');
+const all = require('it-all');
 
 let node;
 (() => {
@@ -14,12 +15,15 @@ let node;
   .catch((e) => console.error('error connecting to IPFS node', e.message));
 
 module.exports = {
-  addFile(buffer) {
+  add(buffer) {
     if (!node) {
       return Promise.reject();
     }
     return node
       .add({ content: buffer })
       .then(({ path }) => (path));
+  },
+  get(cid) {
+    return all(node.cat(cid)).then((buffers) => Buffer.concat(buffers));
   },
 };

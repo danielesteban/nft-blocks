@@ -16,6 +16,7 @@ const origin = (() => {
 
 const app = express();
 app.set('client', client);
+app.set('url', process.env.URL || 'http://localhost:8081/');
 app.use(helmet());
 app.use(cors({ origin }));
 app.use(bodyParser.json());

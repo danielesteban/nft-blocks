@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      body {
+        margin: 0;
+      }
+      canvas {
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script type="module">
+      import {
+        ACESFilmicToneMapping,
+        Box3,
+        PerspectiveCamera,
+        Scene,
+        sRGBEncoding,
+        WebGLRenderer,
+      } from 'https://cdn.jsdelivr.net/npm/three@0.119.1/build/three.module.js';
+      import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.119.1/examples/jsm/loaders/GLTFLoader.js';
+
+      const renderer = new WebGLRenderer({
+        canvas: document.getElementById('canvas'),
+        antialias: true,
+        stencil: false,
+      });
+      renderer.outputEncoding = sRGBEncoding;
+      renderer.toneMapping = ACESFilmicToneMapping;
+      renderer.setSize(window.innerWidth, window.innerHeight);
+
+      const scene = new Scene();
+      const bounds = new Box3();
+      const camera = new PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+      const loader = new GLTFLoader();
+
+      loader.parse((new Uint8Array(__GLTF__)).buffer, '', ({ scene: model }) => {
+        scene.add(model);
+        bounds
+          .setFromObject(model)
+          .getCenter(camera.position);
+        camera.position.z = bounds.max.z + 6;
+        renderer.render(scene, camera);
+        window.__READY__ = true;
+      });
+    </script>
+  </body>
+</html>

@@ -16,7 +16,9 @@
     "express-validator": "^6.6.1",
     "helmet": "^4.0.0",
     "ipfs-http-client": "^45.0.0",
+    "it-all": "^1.0.2",
     "multer": "^1.4.2",
+    "puppeteer": "^5.2.1",
     "truffle-contract": "^4.0.31",
     "web3": "^1.2.11"
   },
