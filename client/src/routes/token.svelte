@@ -60,6 +60,9 @@
     bounds
       .setFromObject(model)
       .getCenter(player.position);
+    if (!isAR) {
+      player.position.y -= 1.6;
+    }
     player.position.z = bounds.max.z + offset;
   };
 
