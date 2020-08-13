@@ -4,6 +4,7 @@ module.exports = (app) => {
     (req, res) => {
       res.json({
         name: 'nft-blocks',
+        description: 'A tool to create virtual tradeable destinations',
         external_link: app.get('client'),
       });
     }
