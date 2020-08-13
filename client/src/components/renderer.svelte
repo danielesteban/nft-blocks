@@ -43,6 +43,7 @@
         camera,
         player,
         viewport,
+        xr,
       });
     }
   };

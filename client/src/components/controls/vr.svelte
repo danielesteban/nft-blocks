@@ -17,7 +17,12 @@
     });
   });
 
-  export const onAnimationTick = ({ animation: { delta }, camera, player }) => {
+  export const onAnimationTick = ({
+    animation: { delta },
+    camera,
+    player,
+    xr,  
+  }) => {
     camera.matrixWorld.decompose(head.position, head.rotation, auxVector);
     controllers.forEach(({
       buttons,
@@ -92,6 +97,9 @@
             .applyQuaternion(worldspace.quaternion),
           delta * 4
         );
+      }
+      if (buttons.secondaryDown) {
+        xr.getSession().end();
       }
     });
   }
