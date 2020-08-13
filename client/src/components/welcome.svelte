@@ -9,13 +9,10 @@
       This is an alpha test of the voxel editor for the cryptoart tool I'm creating.
     </p>
     <p>
-      As many of you know, what you create with this editor will be mintable into an immutable NFT Token and you'll be able to trade it and make some money from it.
+      As some of you know, what you create with this editor can be minted into an immutable NFT Token and you'll be able to trade it and make some money from it.
     </p>
     <p>
-      The trading functionality and the gallery in where the creations will be displayed it's not ready yet. I'm still working on both of those things. 
-    </p>
-    <p>
-      There's also no AR/VR support yet since that would be only available on the immutable gallery viewer. No VR editing mode is planned.
+      I'm still working on the gallery in where the creations will be displayed, but there's already <a href="#/token/0">a viewer</a> with both AR and VR support.
     </p>
     <p>
       One last thing... You'll need at least a window size of 1920x1080 since the Block Type Editor UI still have major issues when it comes to small viewports.
