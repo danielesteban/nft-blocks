@@ -14,6 +14,7 @@
   const dispatch = createEventDispatcher();
 
   export let initialPosition = { x: 0, y: 0, z: 0 };
+  export let alpha = false;
   export let controls = undefined;
   export let scene = new Scene();
   export let support = { ar: false, vr: false };
@@ -56,7 +57,7 @@
   onMount(() => {
     renderer = new WebGLRenderer({
       canvas,
-      alpha: true,
+      alpha,
       antialias: true,
       stencil: false,
       powerPreference: 'high-performance',

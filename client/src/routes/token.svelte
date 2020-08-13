@@ -120,6 +120,7 @@
     on:enterVR={onEnterVR}
     on:exitVR={onExitVR}
     controls={controls}
+    alpha
   />
   {#if support && (support.ar || support.vr) && !isLocked}
     <actions>
@@ -141,6 +142,7 @@
 <style>
   token {
     display: block;
+    background: #000;
     height: 100%;
     position: relative;
     overflow: hidden;
@@ -156,7 +158,7 @@
 
   actions > button {
     font-size: 1.5rem;
-    padding: 1rem 2rem;
+    padding: 0.75rem 2rem;
     margin: 0 0.5rem;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   }

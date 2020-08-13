@@ -1,5 +1,6 @@
 <script>
   import Creator from './routes/creator.svelte';
+  import Gallery from './routes/gallery.svelte';
   import Token from './routes/token.svelte';
 
   // This should prolly be a service that just exports a store.
@@ -11,6 +12,9 @@
       decodeURIComponent(value.trim())
     ));
     switch (id) {
+      case '':
+        route.component = Gallery;
+        break;
       case 'creator':
         route.component = Creator;
         break;
@@ -18,7 +22,7 @@
         route.component = Token;
         break;
       default:
-        location.replace('#/creator');
+        location.replace('#/');
         return;
     }
     route.params = params.length ? params : undefined;

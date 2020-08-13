@@ -6,7 +6,6 @@
   import Tools from '../components/tools.svelte';
   import Trading from '../components/trading.svelte';
   import BlockTypesStore from '../stores/blockTypes';
-  import Welcome from '../components/welcome.svelte';
   import ColorsStore from '../stores/colors';
   import EditorStore from '../stores/editor';
 
@@ -71,8 +70,6 @@
   </viewport>
 </editor>
 
-<Welcome />
-
 <style>
   editor {
     height: 100%;
@@ -120,5 +117,6 @@
     position: relative;
     flex-grow: 1;
     overflow: hidden;
+    cursor: pointer;
   }
 </style>

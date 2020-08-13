@@ -13,9 +13,9 @@
     "contracts:compile": "truffle compile",
     "contracts:migrate": "cross-env NODE_ENV=production truffle migrate --network development",
     "contracts:test": "truffle test",
-    "ganache": "ganache-cli -p 8545 -q",
-    "ipfs": "jsipfs daemon",
-    "services": "npm-run-all --parallel ganache ipfs",
+    "services:ganache": "ganache-cli -p 8545 -q",
+    "services:ipfs": "jsipfs daemon",
+    "services": "npm-run-all --parallel services:ganache services:ipfs",
     "start": "npm-run-all --parallel api:start client:start",
     "postinstall": "cd api && npm install"
   },

@@ -46,6 +46,7 @@
     position: absolute;
     top: 1rem;
     right: 1rem;
+    pointer-events: none;
     display: none;
   }
 

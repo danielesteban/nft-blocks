@@ -29,11 +29,13 @@ module.exports = async (deployer) => {
         .split('\n')
         .filter((line) => (
           line
+          && line.indexOf('NETWORK_ID=') !== 0
           && line.indexOf('TOKENS_ADDRESS=') !== 0
         ));
     } catch (e) {
       env = [];
     }
+    env.push(`NETWORK_ID=${BlocksToken.network_id}`);
     env.push(`TOKENS_ADDRESS=${BlocksToken.address}`);
     fs.writeFileSync(envPath, env.join('\n'));
   });
