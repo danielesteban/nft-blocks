@@ -10,7 +10,7 @@ const queue = [];
 let browser;
 let isBusy;
 
-const capture = ({ hash, promises }) => (
+const capture = (hash) => (
   ipfs.get(hash)
     .then((gltf) => (
       browser
@@ -43,15 +43,16 @@ const processQueue = () => {
   const job = queue.shift();
   if (!job) return;
   isBusy = true;
-  capture(job)
+  const { hash, promises } = job;
+  capture(hash)
     .then((buffer) => {
-      job.promises.forEach(({ resolve }) => resolve(buffer));
-      cache.set(job.hash, buffer);
+      promises.forEach(({ resolve }) => resolve(buffer));
+      cache.set(hash, buffer);
       while (cache.size > 100) {
         cache.delete(cache.keys().next().value);
       }
     })
-    .catch((err) => job.promises.forEach(({ reject }) => reject(err)))
+    .catch((err) => promises.forEach(({ reject }) => reject(err)))
     .finally(() => setTimeout(() => {
       isBusy = false;
       processQueue();
