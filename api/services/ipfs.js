@@ -24,6 +24,9 @@ module.exports = {
       .then(({ path }) => (path));
   },
   get(cid) {
+    if (!node) {
+      return Promise.reject();
+    }
     return all(node.cat(cid)).then((buffers) => Buffer.concat(buffers));
   },
 };

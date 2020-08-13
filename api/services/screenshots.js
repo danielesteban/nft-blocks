@@ -4,10 +4,11 @@ const puppeteer = require('puppeteer');
 const ipfs = require('./ipfs');
 
 const html = fs.readFileSync(path.join(__dirname, 'screenshots.html'), 'utf-8');
+const cache = new Map();
+const queue = [];
 
 let browser;
 let isBusy;
-const queue = [];
 
 const capture = ({ hash, promises }) => (
   ipfs.get(hash)
@@ -30,7 +31,6 @@ const capture = ({ hash, promises }) => (
               page
                 .screenshot({ type: 'png' })
             ))
-            .then((buffer) => promises.forEach(({ resolve }) => resolve(buffer)))
             .finally(() => (
               page
                 .close()
@@ -44,6 +44,13 @@ const processQueue = () => {
   if (!job) return;
   isBusy = true;
   capture(job)
+    .then((buffer) => {
+      job.promises.forEach(({ resolve }) => resolve(buffer));
+      cache.set(job.hash, buffer);
+      while (cache.size > 100) {
+        cache.delete(cache.keys().next().value);
+      }
+    })
     .catch((err) => job.promises.forEach(({ reject }) => reject(err)))
     .finally(() => setTimeout(() => {
       isBusy = false;
@@ -62,6 +69,11 @@ puppeteer
   });
 
 module.exports = (hash) => new Promise((resolve, reject) => {
+  const cached = cache.get(hash);
+  if (cached) {
+    resolve(cached);
+    return;
+  }
   const queued = queue.findIndex(({ hash: queued }) => (queued === hash));
   if (~queued) {
     queue[queued].promises.push({ resolve, reject });
