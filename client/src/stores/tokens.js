@@ -161,6 +161,8 @@ export const owners = (() => {
   };
 })();
 
+export const isMinting = writable(false);
+
 export const mint = (gltf) => {
   const $account = get(account);
   if (!contract || !$account) {
@@ -180,12 +182,14 @@ export const mint = (gltf) => {
     })
     .then((hash) => (
       contract.mintingCost()
-        .then((value) => (
-          contract.mint(hash, { from: $account, value })
+        .then((value) => {
+          isMinting.set(true);
+          return contract.mint(hash, { from: $account, value })
             .then(({ logs: [{ args: { tokenId } }] }) => {
               list.reset();
               return tokenId.toString();
             })
-        ))
+            .finally(() => isMinting.set(false));
+        })
     ));
 };

@@ -3,6 +3,7 @@
   import Blocks from '../components/blocks.svelte';
   import BlockTypes from '../components/blockTypes.svelte';
   import Editor from '../components/editor.svelte';
+  import Minting from '../components/minting.svelte';
   import Tools from '../components/tools.svelte';
   import Trading from '../components/trading.svelte';
   import BlockTypesStore from '../stores/blockTypes';
@@ -69,6 +70,8 @@
     {/if}
   </viewport>
 </editor>
+
+<Minting />
 
 <style>
   editor {

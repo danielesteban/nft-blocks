@@ -32,7 +32,7 @@
   {#if $status === 'ready'}
     {#if $account}
       <button
-        class="primary"
+        class:primary={!isMinting}
         disabled={isMinting}
         on:click={onMint}
       >

@@ -51,13 +51,18 @@
       </brand>
     </div>
     <div>
+      <creator>
+        <a href="#/creator">
+          Create your own
+        </a>
+      </creator>
       <github>
-        <a href="https://github.com/danielesteban/nft-blocks" target="_blank">
+        <a href="https://github.com/danielesteban/nft-blocks" rel="noopener noreferrer" target="_blank">
           view source
         </a>
       </github>
       <credits>
-        <a href="https://dani.gatunes.com/" target="_blank">
+        <a href="https://dani.gatunes.com/" rel="noopener noreferrer" target="_blank">
           dani@gatunes
         </a> © 2020
       </credits>
@@ -98,8 +103,8 @@
     letter-spacing: 0.2rem;
   }
 
-  credits {
-    border-left: 1px solid #999;
+  credits, github {
+    border-left: 1px solid #888;
     color: #ccc;
     margin-left: 1em;
     padding-left: 1em;
