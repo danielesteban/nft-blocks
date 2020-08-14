@@ -21,7 +21,7 @@
     </p>
     <p>
       As this is still a beta, the NFT tokens are being created in the "Rinkeby Test Network".
-      This allows you to mint some testing tokens <a on:click={(e) => e.stopPropagation()} href="https://faucet.rinkeby.io/" rel="noopener noreferrer" target="_blank">for free</a> and to get a hold of the tools and the main concepts.
+      This allows you to mint your creations <a on:click={(e) => e.stopPropagation()} href="https://faucet.rinkeby.io/" rel="noopener noreferrer" target="_blank">for free</a> while you get a hold of the tools and the main concepts.
       But remember to export your creations so you can mint them back on the "Main Ethereum Network" once the beta test finishes.
     </p>
     <p>
