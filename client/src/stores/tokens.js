@@ -67,6 +67,44 @@ export const account = (() => {
   };
 })();
 
+export const creators = (() => {
+  const { subscribe, update } = writable({});
+  return {
+    subscribe,
+    fetch: (tokenId) => (
+      (contract ? (
+        contract.getPastEvents('Transfer', {
+          filter: {
+            tokenId,
+            from: '0x0000000000000000000000000000000000000000',
+          },
+          fromBlock: 0,
+          toBlock: 'latest',
+        }).then(([event]) => {
+          if (!event) {
+            throw new Error();
+          }
+          return event.returnValues.to;
+        })
+      ) : (
+        fetch(`${__API__}token/${tokenId}/creator`)
+          .then((res) => {
+            if (res.status !== 200) {
+              throw new Error();
+            }
+            return res.json();
+          })
+      ))
+        .then((creator) => (
+          update((state) => ({
+            ...state,
+            [tokenId]: creator,
+          }))
+        ))
+    ),
+  };
+})();
+
 export const hashes = (() => {
   const { subscribe, update } = writable({});
   return {

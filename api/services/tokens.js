@@ -17,6 +17,24 @@ artifact.at(process.env.TOKENS_ADDRESS)
   .catch((e) => console.error('error loading tokens contract', e.message));
 
 module.exports = {
+  creator(tokenId) {
+    if (!contract) {
+      return Promise.reject();
+    }
+    return contract.getPastEvents('Transfer', {
+      filter: {
+        tokenId,
+        from: '0x0000000000000000000000000000000000000000',
+      },
+      fromBlock: 0,
+      toBlock: 'latest',
+    }).then(([event]) => {
+      if (!event) {
+        throw new Error();
+      }
+      return event.returnValues.to;
+    });
+  },
   list(account) {
     if (!contract) {
       return Promise.reject();

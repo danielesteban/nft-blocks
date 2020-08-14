@@ -6,6 +6,7 @@
   import VRControls from '../components/controls/vr.svelte';
   import Renderer from '../components/renderer.svelte';
   import {
+    creators,
     hashes,
     list,
     owners,
@@ -57,9 +58,12 @@
   $: tokenId && !hash && hashes.fetch(tokenId);
   $: hash && load(hash);
 
+  $: creator = tokenId && $creators[tokenId];
+  $: tokenId && !creator && creators.fetch(tokenId);
   $: owner = tokenId && $owners[tokenId];
   $: tokenId && !owner && owners.fetch(tokenId);
   $: formattedId = tokenId && `#${('000000' + tokenId).slice(-6)}`;
+  $: formattedCreator = creator && `${creator.slice(0, 6).toUpperCase()}`;
   $: formattedOwner = owner && `${owner.slice(0, 6).toUpperCase()}`;
 
   const openseaLink = (__NetworkId__ === '1' || __NetworkId__ === '4') && (
@@ -148,6 +152,9 @@
       <id>
         Blocks {formattedId}
       </id>
+      <creator>
+        Created by {creator ? formattedCreator : '...'}
+      </creator>
       <owner>
         Owned by {owner ? formattedOwner : '...'}
       </owner>
@@ -195,11 +202,7 @@
     left: 1rem;
   }
 
-  info > id {
-    display: block;
-  }
-
-  info > owner {
+  info > id , info > creator, info > owner {
     display: block;
   }
 

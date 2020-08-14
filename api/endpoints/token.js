@@ -48,6 +48,26 @@ module.exports = (app) => {
   );
 
   app.get(
+    '/token/:id/creator',
+    param('id')
+      .isInt()
+      .toInt(),
+    (req, res) => {
+      if (!validationResult(req).isEmpty()) {
+        res.status(422).end();
+        return;
+      }
+      const { id } = req.params;
+      tokens
+        .creator(id)
+        .then((creator) => (
+          res.json(creator)
+        ))
+        .catch(() => res.status(404).end());
+    }
+  );
+
+  app.get(
     '/token/:id/image',
     param('id')
       .isInt()
