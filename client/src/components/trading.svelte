@@ -55,7 +55,7 @@
       {#if $status === 'unsupported'}
         Web3 is not supported.
         Please open in an Ethereum enabled browser
-        (or install <a href="https://metamask.io/" target="_blank">MetaMask</a>).
+        (or install <a href="https://metamask.io/download.html" rel="noopener noreferrer" target="_blank">MetaMask</a>).
       {:else if $status === 'wrongnetwork'}
         Please switch to: "{networkNames[networkId] || `Network ${networkId}`}"
       {:else if $status === 'error'}
