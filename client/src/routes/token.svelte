@@ -36,6 +36,9 @@
     const [file] = e.dataTransfer.files;
     if (file && file.name.lastIndexOf('.glb') === file.name.length - 4) {
       isLoading = true;
+      if (tokenId) {
+        location.hash = '/token';
+      }
       const reader = new FileReader();
       reader.onload = () => {
         loader.parse(reader.result, '', onLoad);

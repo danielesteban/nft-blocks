@@ -11,7 +11,7 @@
         mint(blob)
       ))
       .then((tokenId) => {
-        location.hash = `#/token/${tokenId}`;
+        location.hash = `/token/${tokenId}`;
       })
       .catch(() => {
         isMinting = false;
