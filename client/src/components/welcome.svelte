@@ -13,7 +13,7 @@
     </p>
     <p>
       When minting the NFT token, a cryptographic hash that uniquely indentifies the content gets stored within it.
-      Meaning, you will have a verifiable and immutable dated record of ownership for your creation.
+      Meaning, you will have a verifiable and dated record of ownership for your creation.
     </p>
     <p>
       The gallery viewer has also AR (Android, iOS, etc...) and VR (Oculus Quest, Valve index, etc...) support to showcase your creations and
