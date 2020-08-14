@@ -14,7 +14,8 @@
       This is a beta test of the cryptoart tool and gallery I'm creating.
     </p>
     <p>
-      It features a <a href="#/creator">voxel editor</a> to create small dioramas/destinations which then you can mint into immutable NFT Tokens and trade them to make some money.
+      It features a <a href="#/creator">voxel editor</a> to create small dioramas/destinations
+      which then you can mint into immutable NFT tokens and make money by trading them.
     </p>
     <p>
       When minting the NFT token, a cryptographic hash that uniquely indentifies the content gets stored within it.
