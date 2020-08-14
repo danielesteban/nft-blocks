@@ -4,7 +4,12 @@
 
 <overlay class:visible={$visible} on:click={() => { $visible = false; }}>
   <welcome>
-    <h3>Welcome, my dudes!</h3>
+    <h3>
+      Welcome, my dudes!
+      <close>
+        &times;
+      </close>
+    </h3>
     <p>
       This is a beta test of the cryptoart tool and gallery I'm creating.
     </p>
@@ -50,11 +55,13 @@
   }
 
   welcome {
+    box-sizing: border-box;
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 600px;
-    transform: translate(-50%, -60%);
+    width: 100%;
+    max-width: 600px;
+    transform: translate(-50%, -50%);
     background: #333;
     display: flex;
     flex-direction: column;
@@ -63,9 +70,15 @@
   }
 
   h3 {
+    display: flex;
+    align-items: center;
     margin: 0 0 1rem;
-    padding: 1rem;
     background: #222;
+    padding: 0.75rem 1rem;
+  }
+
+  close {
+    margin-left: auto;
   }
 
   p {
