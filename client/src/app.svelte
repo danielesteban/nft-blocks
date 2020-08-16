@@ -1,4 +1,5 @@
 <script>
+  import { tick } from 'svelte';
   import Link from './components/link.svelte';
   import Creator from './routes/creator.svelte';
   import Gallery from './routes/gallery.svelte';
@@ -19,10 +20,9 @@
       component = Token;
       break;
     default:
-      router.replace('/');
+      tick().then(() => router.replace('/'));
       break;
   }
-
   const onContextMenu = (e) => e.preventDefault();
 </script>
 
