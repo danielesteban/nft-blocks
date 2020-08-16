@@ -20,8 +20,8 @@ module.exports = async (deployer) => {
     return;
   }
   [
-    path.join(__dirname, '..', '.env'),
     path.join(__dirname, '..', 'api', '.env'),
+    path.join(__dirname, '..', 'client', '.env'),
   ].forEach((envPath) => {
     let env;
     try {

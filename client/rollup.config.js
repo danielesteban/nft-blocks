@@ -9,6 +9,7 @@ import svelte from 'rollup-plugin-svelte';
 import { terser } from 'rollup-plugin-terser';
 
 const production = !process.env.ROLLUP_WATCH;
+require('dotenv').config();
 
 const serve = () => {
   let server;
@@ -58,7 +59,7 @@ export default [
       json(),
       replace({
         __API__: JSON.stringify(process.env.API || 'http://localhost:8081/'),
-        __IPFS__: JSON.stringify(process.env.IPFS_HOST || 'https://cloudflare-ipfs.com/ipfs/'),
+        __IPFS__: JSON.stringify(process.env.IPFS_GATEWAY || 'https://cloudflare-ipfs.com/ipfs/'),
         __NetworkId__: JSON.stringify(process.env.NETWORK_ID),
         __TokensAddress__: JSON.stringify(process.env.TOKENS_ADDRESS),
       }),
