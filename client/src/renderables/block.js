@@ -43,8 +43,8 @@ class Block extends Mesh {
         texture.dispose()
       ));
     }
-    this.textures = [pixels.bottom, pixels.top, pixels.side].map((pixels) => (
-      new DataTexture(
+    this.textures = [pixels.bottom, pixels.top, pixels.side].map((pixels) => {
+      const texture = new DataTexture(
         pixels,
         16,
         16,
@@ -57,8 +57,10 @@ class Block extends Mesh {
         NearestFilter,
         1,
         sRGBEncoding
-      )
-    ));
+      );
+      texture.flipY = true;
+      return texture;
+    });
     const [bottom, top, side] = this.textures;
     material[0].map = side;
     material[1].map = side;
