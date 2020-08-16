@@ -23,10 +23,15 @@ app.get('/token/:id', (req, res) => {
   const id = parseInt(req.params.id, 10);
   let html = index;
   if (!Number.isNaN(id)) {
-    html = html.replace('<meta property="og:image" content="https://nftblocks.gatunes.com/screenshot.png" />', [
-      `<meta property="og:title" content="Blocks #${(`000000${id}`).slice(-6)}" />`,
-      `    <meta property="og:image" content="${API}token/${id}/image" />`,
-    ].join('\n'));
+    html = html
+      .replace(
+        '<meta property="og:title" content="nft-blocks" />',
+        `<meta property="og:title" content="Blocks #${(`000000${id}`).slice(-6)}" />`
+      )
+      .replace(
+        '<meta property="og:image" content="https://nftblocks.gatunes.com/screenshot.png" />',
+        `<meta property="og:image" content="${API}token/${id}/image" />`
+      );
   }
   res.type('text/html').send(html);
 });
