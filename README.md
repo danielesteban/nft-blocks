@@ -1,7 +1,7 @@
-[nft-blocks](https://projects.gatunes.com/nft-blocks/)
+[nft-blocks](https://nftblocks.gatunes.com/)
 ==
 
-[![screenshot](screenshot.jpg)](https://projects.gatunes.com/nft-blocks/)
+[![screenshot](client/screenshot.png)](https://nftblocks.gatunes.com/)
 
 #### Local development
 
