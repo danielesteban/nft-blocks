@@ -1,5 +1,6 @@
 <script>
   import { list } from '../stores/tokens';
+  import Link from '../components/link.svelte';
   import Token from '../components/token.svelte';
   import Welcome from '../components/welcome.svelte';
 
@@ -10,9 +11,9 @@
   {#if $list}
     <tokens>
       {#each $list as tokenId}
-        <a href="#/token/{tokenId}">
+        <Link path="/token/{tokenId}">
           <Token id={tokenId} />
-        </a>
+        </Link>
       {/each}
     </tokens>
   {:else}
@@ -21,11 +22,11 @@
     </feedback>
   {/if}
   <create>
-    <a href="#/creator">
+    <Link path="/creator">
       <button>
         &plus;
       </button>
-    </a>
+    </Link>
   </create>
 </gallery>
 
@@ -56,7 +57,7 @@
     bottom: 2rem;
   }
 
-  create > a > button {
+  create button {
     border-radius: 32px;
     width: 64px;
     height: 64px;

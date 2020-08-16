@@ -5,6 +5,7 @@
   import DesktopControls from '../components/controls/desktop.svelte';
   import VRControls from '../components/controls/vr.svelte';
   import Renderer from '../components/renderer.svelte';
+  import router from '../stores/router';
   import {
     creators,
     hashes,
@@ -38,7 +39,7 @@
     if (file && file.name.lastIndexOf('.glb') === file.name.length - 4) {
       isLoading = true;
       if (tokenId) {
-        location.hash = '/token';
+        router.push('/token');
       }
       const reader = new FileReader();
       reader.onload = () => {

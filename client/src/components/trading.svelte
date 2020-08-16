@@ -1,5 +1,6 @@
 <script>
   import { account, mint, status } from '../stores/tokens';
+  import router from '../stores/router';
 
   export let blocks;
 
@@ -10,9 +11,9 @@
       .then((blob) => (
         mint(blob)
       ))
-      .then((tokenId) => {
-        location.hash = `/token/${tokenId}`;
-      })
+      .then((tokenId) => (
+        router.push(`/token/${tokenId}`)
+      ))
       .catch(() => {
         isMinting = false;
       });

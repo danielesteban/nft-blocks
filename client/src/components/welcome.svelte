@@ -1,4 +1,5 @@
 <script>
+  import Link from './link.svelte';
   import visible from '../stores/welcome';
 </script>
 
@@ -14,7 +15,7 @@
       This is a beta test of the cryptoart tool and gallery I'm creating.
     </p>
     <p>
-      It features a <a href="#/creator">voxel editor</a> to create small dioramas/destinations
+      It features a <Link path="/creator"><l>voxel editor</l></Link> to create small dioramas/destinations
       which then you can mint into immutable NFT tokens and make money by trading them.
     </p>
     <p>
@@ -23,11 +24,11 @@
     </p>
     <p>
       The gallery viewer has also AR (Android, iOS, etc...) and VR (Oculus Quest, Valve index, etc...) support to showcase your creations and
-      they will also appear on NFT marketplaces like <a on:click={(e) => e.stopPropagation()} href="https://rinkeby.opensea.io/assets/nft-blocks-v2" rel="noopener noreferrer" target="_blank">OpenSea</a>.
+      they will also appear on NFT marketplaces like <a on:click={(e) => e.stopPropagation()} href="https://rinkeby.opensea.io/assets/nft-blocks-v2" rel="noopener noreferrer" target="_blank"><l>OpenSea</l></a>.
     </p>
     <p>
       As this is still a beta, the NFT tokens are being created in the "Rinkeby Test Network".
-      This allows you to mint your creations <a on:click={(e) => e.stopPropagation()} href="https://faucet.rinkeby.io/" rel="noopener noreferrer" target="_blank">for free</a> while you get a hold of the tools and the main concepts.
+      This allows you to mint your creations <a on:click={(e) => e.stopPropagation()} href="https://faucet.rinkeby.io/" rel="noopener noreferrer" target="_blank"><l>for free</l></a> while you get a hold of the tools and the main concepts.
       But remember to export your creations so you can mint them back on the "Main Ethereum Network" once the beta test finishes.
     </p>
     <p>
@@ -86,7 +87,7 @@
     margin: 0 1rem 0.5rem;
   }
 
-  p > a {
+  p l {
     text-decoration: underline;
   }
 

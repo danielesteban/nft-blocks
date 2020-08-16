@@ -24,7 +24,7 @@ const serve = () => {
       if (server) {
         return;
       }
-      server = spawn('npm', ['run', 'client:serve'], {
+      server = spawn('npm', ['run', 'serve'], {
         stdio: ['ignore', 'inherit', 'inherit'],
         shell: true,
       });

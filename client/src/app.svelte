@@ -1,34 +1,27 @@
 <script>
+  import Link from './components/link.svelte';
   import Creator from './routes/creator.svelte';
   import Gallery from './routes/gallery.svelte';
   import Token from './routes/token.svelte';
+  import router from './stores/router';
 
-  // This should prolly be a service that just exports a store.
-  // Maybe use the history module and a path-to-regex schema.
-  // But this quick&dirty hash router should work for now.
-  const route = {};
-  const onLocationChange = () => {
-    const [id, ...params] = document.location.hash.substr(2).split('/').map((value) => (
-      decodeURIComponent(value.trim())
-    ));
-    switch (id) {
-      case '':
-        route.component = Gallery;
-        break;
-      case 'creator':
-        route.component = Creator;
-        break;
-      case 'token':
-        route.component = Token;
-        break;
-      default:
-        location.replace('#/');
-        return;
-    }
-    route.params = params.length ? params : undefined;
-  };
-  window.addEventListener('hashchange', onLocationChange);
-  onLocationChange();
+  router.init();
+
+  let component;
+  $: switch ($router.id) {
+    case '':
+      component = Gallery;
+      break;
+    case 'creator':
+      component = Creator;
+      break;
+    case 'token':
+      component = Token;
+      break;
+    default:
+      router.replace('/');
+      break;
+  }
 
   const onContextMenu = (e) => e.preventDefault();
 </script>
@@ -38,23 +31,23 @@
 <app>
   <route>
     <svelte:component
-      this={route.component}
-      {...(route.params ? { params: route.params } : {})}
+      this={component}
+      {...($router.params ? { params: $router.params } : {})}
     />
   </route>
   <toolbar>
     <div>
       <brand>
-        <a href="#/">
+        <Link path="/">
           nft-blocks
-        </a>
+        </Link>
       </brand>
     </div>
     <div>
       <creator>
-        <a href="#/creator">
+        <Link path="/creator">
           Create your own
-        </a>
+        </Link>
       </creator>
       <github>
         <a href="https://github.com/danielesteban/nft-blocks" rel="noopener noreferrer" target="_blank">
