@@ -22,7 +22,7 @@
   let renderer;
   let viewport;
 
-  const camera = new PerspectiveCamera(70, 1, 0.1, 1000);
+  const camera = new PerspectiveCamera(70, 1, 0.01, 100);
   const clock = new Clock();
   const player = new Group();
   player.position.copy(initialPosition);
