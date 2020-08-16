@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 
 export default () => {
-  const { subscribe, set } = writable();
+  const { subscribe, set } = writable(0);
   const update = (type) => {
     set(type);
     requestAnimationFrame(() => (
