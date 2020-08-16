@@ -1,7 +1,7 @@
 <script>
   export let id;
 
-  $: formattedId = `#${('000000' + id).slice(-6)}`;
+  $: formattedId = `#${(`000000${id}`).slice(-6)}`;
   $: image = `${__API__}token/${id}/image`;
 </script>
 
