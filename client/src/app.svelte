@@ -23,6 +23,7 @@
       tick().then(() => router.replace('/'));
       break;
   }
+
   const onContextMenu = (e) => e.preventDefault();
 </script>
 
