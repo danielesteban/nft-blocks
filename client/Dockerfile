@@ -16,6 +16,7 @@ RUN npm ci
 COPY index.css .
 COPY index.html .
 COPY rollup.config.js .
+COPY screenshot.png .
 COPY server.js .
 COPY src/ src/
 
