@@ -20,7 +20,11 @@ COPY server.js .
 COPY src/ src/
 
 # Build the client
-RUN npm run build
+ARG api
+ARG ipfs
+ARG network
+ARG tokens
+RUN API=$api IPFS_GATEWAY=$ipfs NETWORK_ID=$network TOKENS_ADDRESS=$tokens npm run build
 
 # De-escalate privileges
 USER node
