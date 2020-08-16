@@ -77,7 +77,7 @@
     if (!model) {
       return;
     }
-    const scale = isAR ? 0.1 : 1;
+    const scale = isAR ? 0.05 : 1;
     const offset = isAR ? 0.5 : 4;
     model.scale.setScalar(scale);
     bounds
