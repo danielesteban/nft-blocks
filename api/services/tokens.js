@@ -16,10 +16,19 @@ artifact.at(process.env.TOKENS_ADDRESS)
   })
   .catch((e) => console.error('error loading tokens contract', e.message));
 
+const cache = {
+  creators: new Map(),
+  hashes: new Map(),
+};
+
 module.exports = {
   creator(tokenId) {
     if (!contract) {
       return Promise.reject();
+    }
+    const cached = cache.creators.get(tokenId);
+    if (cached) {
+      return Promise.resolve(cached);
     }
     return contract.getPastEvents('Transfer', {
       filter: {
@@ -28,12 +37,15 @@ module.exports = {
       },
       fromBlock: 0,
       toBlock: 'latest',
-    }).then(([event]) => {
-      if (!event) {
-        throw new Error();
-      }
-      return event.returnValues.to;
-    });
+    })
+      .then(([event]) => {
+        if (!event) {
+          throw new Error();
+        }
+        const creator = event.returnValues.to;
+        cache.creators.set(tokenId, creator);
+        return creator;
+      });
   },
   list(account) {
     if (!contract) {
@@ -59,7 +71,15 @@ module.exports = {
     if (!contract) {
       return Promise.reject();
     }
-    return contract.hash(tokenId);
+    const cached = cache.hashes.get(tokenId);
+    if (cached) {
+      return Promise.resolve(cached);
+    }
+    return contract.hash(tokenId)
+      .then((hash) => {
+        cache.hashes.set(tokenId, hash);
+        return hash;
+      });
   },
   owner(tokenId) {
     if (!contract) {

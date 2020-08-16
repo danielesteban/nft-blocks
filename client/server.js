@@ -20,7 +20,7 @@ loadIndex();
 
 const API = process.env.API || 'http://localhost:8081/';
 app.get('/token/:id', (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = parseInt(`${req.params.id}`, 10);
   let html = index;
   if (!Number.isNaN(id)) {
     html = html
