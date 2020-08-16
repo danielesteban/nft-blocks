@@ -40,7 +40,7 @@ module.exports = (app) => {
             name: `Blocks #${id}`,
             hash,
             image: `${app.get('url')}token/${id}/image`,
-            external_url: `${app.get('client')}#/token/${id}`,
+            external_url: `${app.get('client')}token/${id}`,
           })
         ))
         .catch(() => res.status(404).end());
