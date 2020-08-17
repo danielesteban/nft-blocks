@@ -122,32 +122,34 @@
 <svelte:window on:dragover={onDragOver} on:drop={onDrop} />
 
 <token>
-  {#if isAR}
-    <ARControls
-      bind:this={controls}
+  <viewport>
+    {#if isAR}
+      <ARControls
+        bind:this={controls}
+      />
+    {:else if isVR}
+      <VRControls
+        bind:this={controls}
+      />
+    {:else}
+      <DesktopControls
+        bind:this={controls}
+        bind:isLocked={isLocked}
+      />
+    {/if}
+    <Renderer
+      bind:scene={scene}
+      bind:support={support}
+      bind:enterAR={enterAR}
+      bind:enterVR={enterVR}
+      on:enterAR={onEnterAR}
+      on:exitAR={onExitAR}
+      on:enterVR={onEnterVR}
+      on:exitVR={onExitVR}
+      controls={controls}
+      alpha
     />
-  {:else if isVR}
-    <VRControls
-      bind:this={controls}
-    />
-  {:else}
-    <DesktopControls
-      bind:this={controls}
-      bind:isLocked={isLocked}
-    />
-  {/if}
-  <Renderer
-    bind:scene={scene}
-    bind:support={support}
-    bind:enterAR={enterAR}
-    bind:enterVR={enterVR}
-    on:enterAR={onEnterAR}
-    on:exitAR={onExitAR}
-    on:enterVR={onEnterVR}
-    on:exitVR={onExitVR}
-    controls={controls}
-    alpha
-  />
+  </viewport>
   {#if tokenId}
     <info>
       <id>
@@ -189,11 +191,17 @@
 
 <style>
   token {
+    position: relative;
+    display: block;
+    height: 100%;
+  }
+
+  viewport {
     display: block;
     background: #000;
     height: 100%;
-    position: relative;
     overflow: hidden;
+    cursor: pointer;
   }
 
   info {
