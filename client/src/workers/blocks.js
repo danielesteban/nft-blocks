@@ -94,7 +94,7 @@ const voxelNeighbors = [
 const floodLight = (origin, queue, key = 'light') => {
   const getChunk = getVoxelChunk(origin);
   const isSunLight = key === 'sunlight';
-  const isTransparent = (type) => types[type].isTransparent;
+  const isTranslucent = (type) => types[type].isTranslucent;
   while (queue.length) {
     const { x, y, z } = queue.shift();
     const { chunk, cx, cz } = getChunk(x, z);
@@ -112,7 +112,7 @@ const floodLight = (origin, queue, key = 'light') => {
       const { chunk, cx, cz } = getChunk(nx, nz);
       const voxel = getIndex(cx, ny, cz);
       if (
-        !isTransparent(chunk.voxels[voxel])
+        !isTranslucent(chunk.voxels[voxel])
         || (
           isSunLight
           && offset.y !== -1
@@ -138,7 +138,7 @@ const propagate = (chunk) => {
       for (let z = 0; z < size; z += 1) {
         const i = getIndex(x, y, z);
         const type = chunk.voxels[i];
-        if (y === top && types[type].isTransparent) {
+        if (y === top && types[type].isTranslucent) {
           chunk.voxels[i + fields.sunlight] = maxLight;
           sunlightQueue.push({ x, y: top, z });
         } else if (types[type].isLight) {
@@ -252,7 +252,7 @@ const update = ({
   if (hasPropagated) {
     if (types[current].isLight) {
       removeLight(chunk, x, y, z);
-    } else if (types[current].isTransparent && !types[type].isTransparent) {
+    } else if (types[current].isTranslucent && !types[type].isTranslucent) {
       ['light', 'sunlight'].forEach((key) => {
         if (voxels[voxel + fields[key]] !== 0) {
           removeLight(chunk, x, y, z, key);
@@ -262,7 +262,7 @@ const update = ({
     if (types[type].isLight) {
       voxels[voxel + fields.light] = maxLight;
       floodLight(chunk, [{ x, y, z }]);
-    } else if (types[type].isTransparent && !types[current].isTransparent) {
+    } else if (types[type].isTranslucent && !types[current].isTranslucent) {
       const getChunk = getVoxelChunk(chunk);
       ['light', 'sunlight'].forEach((key) => {
         const queue = [];
@@ -279,10 +279,10 @@ const update = ({
             const nz = z + offset.z;
             const { chunk, cx, cz } = getChunk(nx, nz);
             const voxel = getIndex(cx, ny, cz);
-            const { isLight, isTransparent } = types[chunk.voxels[voxel]];
+            const { isLight, isTranslucent } = types[chunk.voxels[voxel]];
             if (
               chunk.voxels[voxel + fields[key]] !== 0
-              && (isTransparent || (isLight && key === 'light'))
+              && (isTranslucent || (isLight && key === 'light'))
             ) {
               queue.push({ x: nx, y: ny, z: nz });
             }
@@ -296,18 +296,18 @@ const update = ({
 };
 
 const getLighting = ({ light, sunlight }, neighbors) => neighbors.map((neighbors) => {
-  let n1 = neighbors[0].type !== 0;
-  let n2 = neighbors[1].type !== 0;
-  let n3 = (n1 && n2) || (neighbors[2].type !== 0);
+  let n1 = types[neighbors[0].type].hasAO;
+  let n2 = types[neighbors[1].type].hasAO;
+  let n3 = (n1 && n2) || types[neighbors[2].type].hasAO;
   const ao = [n1, n2, n3].reduce((ao, n) => (
     ao - (n ? 0.2 : 0)
   ), 1);
   let c = 1;
   let l = light;
   let s = sunlight;
-  n1 = types[neighbors[0].type].isTransparent;
-  n2 = types[neighbors[1].type].isTransparent;
-  n3 = types[neighbors[2].type].isTransparent;
+  n1 = types[neighbors[0].type].isTranslucent;
+  n2 = types[neighbors[1].type].isTranslucent;
+  n3 = (n1 || n2) && types[neighbors[2].type].isTranslucent;
   [n1, n2, n3].forEach((n, i) => {
     if (n) {
       l += neighbors[i].light;
@@ -341,10 +341,14 @@ const getVoxelData = (origin) => {
 };
 
 const isVisible = (type, neighbor) => (
-  types[neighbor].isTransparent
-  && (
-    !types[type].isTransparent
-    || type !== neighbor
+  !types[type].isCulled
+  || !types[neighbor].isCulled
+  || (
+    types[neighbor].isTransparent
+    && (
+      !types[type].isTransparent
+      || type !== neighbor
+    )
   )
 );
 
@@ -404,7 +408,7 @@ const mesh = (cx, cz) => {
       lighting,
       facing
     ) => {
-      const texture = types[type].textures[facing];
+      const texture = types[type].textures[facing % 6];
       const uvs = [
         [texture.from, facing + textureY.to],
         [texture.to, facing + textureY.to],
@@ -424,6 +428,197 @@ const mesh = (cx, cz) => {
       [0, 1, 2, 2, 3, 0].forEach((i) => mesh.index.push(mesh.offset + i));
       mesh.offset += 4;
     };
+    const box = (x, y, z, type) => {
+      const top = get(x, y + 1, z);
+      const bottom = get(x, y - 1, z);
+      const south = get(x, y, z + 1);
+      const north = get(x, y, z - 1);
+      const west = get(x - 1, y, z);
+      const east = get(x + 1, y, z);
+      if (isVisible(type, top.type)) {
+        const n = get(x, y + 1, z - 1);
+        const e = get(x + 1, y + 1, z);
+        const w = get(x - 1, y + 1, z);
+        const s = get(x, y + 1, z + 1);
+        pushFace(
+          [x, y + 1, z + 1],
+          [x + 1, y + 1, z + 1],
+          [x + 1, y + 1, z],
+          [x, y + 1, z],
+          type,
+          getLighting(
+            top,
+            [
+              [w, s, get(x - 1, y + 1, z + 1)],
+              [e, s, get(x + 1, y + 1, z + 1)],
+              [e, n, get(x + 1, y + 1, z - 1)],
+              [w, n, get(x - 1, y + 1, z - 1)],
+            ]
+          ),
+          0
+        );
+      }
+      if (isVisible(type, bottom.type)) {
+        const n = get(x, y - 1, z - 1);
+        const e = get(x + 1, y - 1, z);
+        const w = get(x - 1, y - 1, z);
+        const s = get(x, y - 1, z + 1);
+        pushFace(
+          [x, y, z],
+          [x + 1, y, z],
+          [x + 1, y, z + 1],
+          [x, y, z + 1],
+          type,
+          getLighting(
+            bottom,
+            [
+              [w, n, get(x - 1, y - 1, z - 1)],
+              [e, n, get(x + 1, y - 1, z - 1)],
+              [e, s, get(x + 1, y - 1, z + 1)],
+              [w, s, get(x - 1, y - 1, z + 1)],
+            ]
+          ),
+          1
+        );
+      }
+      if (isVisible(type, south.type)) {
+        const e = get(x + 1, y, z + 1);
+        const w = get(x - 1, y, z + 1);
+        const t = get(x, y + 1, z + 1);
+        const b = get(x, y - 1, z + 1);
+        pushFace(
+          [x, y, z + 1],
+          [x + 1, y, z + 1],
+          [x + 1, y + 1, z + 1],
+          [x, y + 1, z + 1],
+          type,
+          getLighting(
+            south,
+            [
+              [w, b, get(x - 1, y - 1, z + 1)],
+              [e, b, get(x + 1, y - 1, z + 1)],
+              [e, t, get(x + 1, y + 1, z + 1)],
+              [w, t, get(x - 1, y + 1, z + 1)],
+            ]
+          ),
+          2
+        );
+      }
+      if (isVisible(type, north.type)) {
+        const e = get(x + 1, y, z - 1);
+        const w = get(x - 1, y, z - 1);
+        const t = get(x, y + 1, z - 1);
+        const b = get(x, y - 1, z - 1);
+        pushFace(
+          [x + 1, y, z],
+          [x, y, z],
+          [x, y + 1, z],
+          [x + 1, y + 1, z],
+          type,
+          getLighting(
+            north,
+            [
+              [e, b, get(x + 1, y - 1, z - 1)],
+              [w, b, get(x - 1, y - 1, z - 1)],
+              [w, t, get(x - 1, y + 1, z - 1)],
+              [e, t, get(x + 1, y + 1, z - 1)],
+            ]
+          ),
+          3
+        );
+      }
+      if (isVisible(type, west.type)) {
+        const n = get(x - 1, y, z - 1);
+        const s = get(x - 1, y, z + 1);
+        const t = get(x - 1, y + 1, z);
+        const b = get(x - 1, y - 1, z);
+        pushFace(
+          [x, y, z],
+          [x, y, z + 1],
+          [x, y + 1, z + 1],
+          [x, y + 1, z],
+          type,
+          getLighting(
+            west,
+            [
+              [n, b, get(x - 1, y - 1, z - 1)],
+              [s, b, get(x - 1, y - 1, z + 1)],
+              [s, t, get(x - 1, y + 1, z + 1)],
+              [n, t, get(x - 1, y + 1, z - 1)],
+            ]
+          ),
+          4
+        );
+      }
+      if (isVisible(type, east.type)) {
+        const n = get(x + 1, y, z - 1);
+        const s = get(x + 1, y, z + 1);
+        const t = get(x + 1, y + 1, z);
+        const b = get(x + 1, y - 1, z);
+        pushFace(
+          [x + 1, y, z + 1],
+          [x + 1, y, z],
+          [x + 1, y + 1, z],
+          [x + 1, y + 1, z + 1],
+          type,
+          getLighting(
+            east,
+            [
+              [s, b, get(x + 1, y - 1, z + 1)],
+              [n, b, get(x + 1, y - 1, z - 1)],
+              [n, t, get(x + 1, y + 1, z - 1)],
+              [s, t, get(x + 1, y + 1, z + 1)],
+            ]
+          ),
+          5
+        );
+      }
+    };
+    const cross = (x, y, z, { type, light, sunlight }) => {
+      const lighting = (() => {
+        const lighting = Math.max(
+          Math.max(light, sunlight * sunlightIntensity) / maxLight,
+          0.05
+        );
+        return [...Array(4)].map(() => lighting);
+      })();
+      pushFace(
+        [x, y, z],
+        [x + 1, y, z + 1],
+        [x + 1, y + 1, z + 1],
+        [x, y + 1, z],
+        type,
+        lighting,
+        6
+      );
+      pushFace(
+        [x, y, z + 1],
+        [x + 1, y, z],
+        [x + 1, y + 1, z],
+        [x, y + 1, z + 1],
+        type,
+        lighting,
+        6
+      );
+      pushFace(
+        [x + 1, y, z + 1],
+        [x, y, z],
+        [x, y + 1, z],
+        [x + 1, y + 1, z + 1],
+        type,
+        lighting,
+        6
+      );
+      pushFace(
+        [x + 1, y, z],
+        [x, y, z + 1],
+        [x, y + 1, z + 1],
+        [x + 1, y + 1, z],
+        type,
+        lighting,
+        6
+      );
+    };
     const fromY = subchunk * size;
     const toY = (subchunk + 1) * size;
     for (let x = 0; x < size; x += 1) {
@@ -431,149 +626,13 @@ const mesh = (cx, cz) => {
         for (let z = 0; z < size; z += 1) {
           const voxel = get(x, y, z);
           if (voxel.type !== 0) {
-            const top = get(x, y + 1, z);
-            const bottom = get(x, y - 1, z);
-            const south = get(x, y, z + 1);
-            const north = get(x, y, z - 1);
-            const west = get(x - 1, y, z);
-            const east = get(x + 1, y, z);
-            if (isVisible(voxel.type, top.type)) {
-              const n = get(x, y + 1, z - 1);
-              const e = get(x + 1, y + 1, z);
-              const w = get(x - 1, y + 1, z);
-              const s = get(x, y + 1, z + 1);
-              pushFace(
-                [x, y + 1, z + 1],
-                [x + 1, y + 1, z + 1],
-                [x + 1, y + 1, z],
-                [x, y + 1, z],
-                voxel.type,
-                getLighting(
-                  top,
-                  [
-                    [w, s, get(x - 1, y + 1, z + 1)],
-                    [e, s, get(x + 1, y + 1, z + 1)],
-                    [e, n, get(x + 1, y + 1, z - 1)],
-                    [w, n, get(x - 1, y + 1, z - 1)],
-                  ]
-                ),
-                0
-              );
-            }
-            if (isVisible(voxel.type, bottom.type)) {
-              const n = get(x, y - 1, z - 1);
-              const e = get(x + 1, y - 1, z);
-              const w = get(x - 1, y - 1, z);
-              const s = get(x, y - 1, z + 1);
-              pushFace(
-                [x, y, z],
-                [x + 1, y, z],
-                [x + 1, y, z + 1],
-                [x, y, z + 1],
-                voxel.type,
-                getLighting(
-                  bottom,
-                  [
-                    [w, n, get(x - 1, y - 1, z - 1)],
-                    [e, n, get(x + 1, y - 1, z - 1)],
-                    [e, s, get(x + 1, y - 1, z + 1)],
-                    [w, s, get(x - 1, y - 1, z + 1)],
-                  ]
-                ),
-                1
-              );
-            }
-            if (isVisible(voxel.type, south.type)) {
-              const e = get(x + 1, y, z + 1);
-              const w = get(x - 1, y, z + 1);
-              const t = get(x, y + 1, z + 1);
-              const b = get(x, y - 1, z + 1);
-              pushFace(
-                [x, y, z + 1],
-                [x + 1, y, z + 1],
-                [x + 1, y + 1, z + 1],
-                [x, y + 1, z + 1],
-                voxel.type,
-                getLighting(
-                  south,
-                  [
-                    [w, b, get(x - 1, y - 1, z + 1)],
-                    [e, b, get(x + 1, y - 1, z + 1)],
-                    [e, t, get(x + 1, y + 1, z + 1)],
-                    [w, t, get(x - 1, y + 1, z + 1)],
-                  ]
-                ),
-                2
-              );
-            }
-            if (isVisible(voxel.type, north.type)) {
-              const e = get(x + 1, y, z - 1);
-              const w = get(x - 1, y, z - 1);
-              const t = get(x, y + 1, z - 1);
-              const b = get(x, y - 1, z - 1);
-              pushFace(
-                [x + 1, y, z],
-                [x, y, z],
-                [x, y + 1, z],
-                [x + 1, y + 1, z],
-                voxel.type,
-                getLighting(
-                  north,
-                  [
-                    [e, b, get(x + 1, y - 1, z - 1)],
-                    [w, b, get(x - 1, y - 1, z - 1)],
-                    [w, t, get(x - 1, y + 1, z - 1)],
-                    [e, t, get(x + 1, y + 1, z - 1)],
-                  ]
-                ),
-                3
-              );
-            }
-            if (isVisible(voxel.type, west.type)) {
-              const n = get(x - 1, y, z - 1);
-              const s = get(x - 1, y, z + 1);
-              const t = get(x - 1, y + 1, z);
-              const b = get(x - 1, y - 1, z);
-              pushFace(
-                [x, y, z],
-                [x, y, z + 1],
-                [x, y + 1, z + 1],
-                [x, y + 1, z],
-                voxel.type,
-                getLighting(
-                  west,
-                  [
-                    [n, b, get(x - 1, y - 1, z - 1)],
-                    [s, b, get(x - 1, y - 1, z + 1)],
-                    [s, t, get(x - 1, y + 1, z + 1)],
-                    [n, t, get(x - 1, y + 1, z - 1)],
-                  ]
-                ),
-                4
-              );
-            }
-            if (isVisible(voxel.type, east.type)) {
-              const n = get(x + 1, y, z - 1);
-              const s = get(x + 1, y, z + 1);
-              const t = get(x + 1, y + 1, z);
-              const b = get(x + 1, y - 1, z);
-              pushFace(
-                [x + 1, y, z + 1],
-                [x + 1, y, z],
-                [x + 1, y + 1, z],
-                [x + 1, y + 1, z + 1],
-                voxel.type,
-                getLighting(
-                  east,
-                  [
-                    [s, b, get(x + 1, y - 1, z + 1)],
-                    [n, b, get(x + 1, y - 1, z - 1)],
-                    [n, t, get(x + 1, y + 1, z - 1)],
-                    [s, t, get(x + 1, y + 1, z + 1)],
-                  ]
-                ),
-                5
-              );
+            switch (types[voxel.type].model) {
+              case 'cross':
+                cross(x, y, z, voxel);
+                break;
+              default:
+                box(x, y, z, voxel.type);
+                break;
             }
           }
         }
@@ -650,7 +709,7 @@ context.addEventListener('message', ({ data: message }) => {
         {
           name: 'Air',
           isLight: false,
-          isTransparent: true,
+          isTranslucent: true,
         },
         ...message.types
           .map((type) => {
@@ -659,6 +718,9 @@ context.addEventListener('message', ({ data: message }) => {
             textures[material] += 3;
             return {
               ...type,
+              hasAO: type.model !== 'cross',
+              isCulled: type.model !== 'cross',
+              isTranslucent: type.isTransparent || type.model === 'cross',
               textures: [
                 index + 2,
                 index,
@@ -695,17 +757,19 @@ context.addEventListener('message', ({ data: message }) => {
             return ~index ? index : 0;
           });
         } else {
-          const [current, update] = [previousTypes, types]
-            .map((types) => types.reduce((types, { isLight, isTransparent }, i) => {
-              if (isLight || isTransparent) {
-                types.push(i);
-              }
-              return types;
-            }, []));
-          repropagate = (
-            current.length !== update.length
-            || current.find((i) => (i !== update[i]))
-          );
+          const len = previousTypes.length;
+          for (let i = 0; i < len; i += 1) {
+            const prev = previousTypes[i];
+            const current = types[i];
+            if (
+              prev.model !== current.model
+              || prev.isLight !== current.isLight
+              || prev.isTransparent !== current.isTransparent
+            ) {
+              repropagate = true;
+              break;
+            }
+          }
         }
         if (repropagate) {
           [...chunks.values()].forEach(({ key }) => {

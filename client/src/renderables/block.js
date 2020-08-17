@@ -1,9 +1,12 @@
 import {
   BoxBufferGeometry,
+  BufferGeometry,
   DataTexture,
+  Geometry,
   Mesh,
   MeshBasicMaterial,
   NearestFilter,
+  PlaneGeometry,
   RGBAFormat,
   RepeatWrapping,
   sRGBEncoding,
@@ -14,8 +17,21 @@ import {
 // Block Model
 
 class Block extends Mesh {
-  static setupGeoemtry() {
-    Block.geometry = new BoxBufferGeometry();
+  static setupModels() {
+    const cross = new BufferGeometry();
+    const merged = new Geometry();
+    const plane = new PlaneGeometry();
+    for (let i = 0; i < 4; i += 1) {
+      plane.rotateY(Math.PI * 0.5);
+      const clone = plane.clone();
+      merged.merge(clone);
+    }
+    cross.fromGeometry(merged);
+    cross.groups[0].materialIndex = 2;
+    Block.models = {
+      box: new BoxBufferGeometry(),
+      cross,
+    };
   }
 
   static setupMaterial() {
@@ -23,14 +39,14 @@ class Block extends Mesh {
   }
 
   constructor() {
-    if (!Block.geometry) {
-      Block.setupGeoemtry();
+    if (!Block.models) {
+      Block.setupModels();
     }
     if (!Block.material) {
       Block.setupMaterial();
     }
     super(
-      Block.geometry,
+      Block.models.box,
       Block.material
     );
     this.matrixAutoUpdate = false;
@@ -70,8 +86,9 @@ class Block extends Mesh {
     material[5].map = side;
   }
 
-  updateType(isTransparent) {
+  updateType({ model, isTransparent }) {
     const { material } = this;
+    this.geometry = Block.models[model];
     material.forEach((material) => {
       material.transparent = isTransparent;
     });

@@ -202,32 +202,39 @@ export const owners = (() => {
 export const isMinting = writable(false);
 
 export const mint = (gltf) => {
-  const $account = get(account);
-  if (!contract || !$account) {
+  if (!contract) {
     return Promise.reject();
   }
-  const body = new FormData();
-  body.append('gltf', gltf);
-  return fetch(`${__API__}upload`, {
-    body,
-    method: 'POST',
-  })
-    .then((res) => {
-      if (res.status !== 200) {
-        throw new Error();
-      }
-      return res.json();
-    })
-    .then((hash) => (
-      contract.mintingCost()
-        .then((value) => {
-          isMinting.set(true);
-          return contract.mint(hash, { from: $account, value })
-            .then(({ logs: [{ args: { tokenId } }] }) => {
-              list.reset();
-              return tokenId.toString();
-            })
-            .finally(() => isMinting.set(false));
+  const $account = get(account);
+  return ($account ? (
+    Promise.resolve($account)
+  ) : (
+    account.request().then(([account]) => account)
+  ))
+    .then((account) => {
+      const body = new FormData();
+      body.append('gltf', gltf);
+      return fetch(`${__API__}upload`, {
+        body,
+        method: 'POST',
+      })
+        .then((res) => {
+          if (res.status !== 200) {
+            throw new Error();
+          }
+          return res.json();
         })
-    ));
+        .then((hash) => (
+          contract.mintingCost()
+            .then((value) => {
+              isMinting.set(true);
+              return contract.mint(hash, { from: account, value })
+                .then(({ logs: [{ args: { tokenId } }] }) => {
+                  list.reset();
+                  return tokenId.toString();
+                })
+                .finally(() => isMinting.set(false));
+            })
+        ));
+    });
 };

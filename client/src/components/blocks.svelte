@@ -158,11 +158,14 @@
       return false;
     }
     const { point, uv } = hit;
+    const normal = blockFacings[Math.floor(uv.y)];
+    if (!normal && neighbor) {
+      return false;
+    }
+    if (normal) {
+      point.addScaledVector(normal, (neighbor ? 1 : -1) * 0.25);
+    }
     return point
-      .addScaledVector(
-        blockFacings[Math.floor(uv.y)],
-        (neighbor ? 1 : -1) * 0.25
-      )
       .divideScalar(0.5)
       .floor();
   };

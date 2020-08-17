@@ -5,7 +5,6 @@
   import Editor from '../components/editor.svelte';
   import Minting from '../components/minting.svelte';
   import Tools from '../components/tools.svelte';
-  import Trading from '../components/trading.svelte';
   import BlockTypesStore from '../stores/blockTypes';
   import ColorsStore from '../stores/colors';
   import EditorStore from '../stores/editor';
@@ -44,10 +43,6 @@
       Tools
     </heading>
     <Tools blocks={blocks} />
-    <heading>
-      Trading
-    </heading>
-    <Trading blocks={blocks} />
   </ui>
   <viewport>
     <renderer>

@@ -95,6 +95,7 @@ export default () => {
       create(type = {}) {
         update((types) => [...types, {
           name: type.name || 'New Block',
+          model: type.model || 'box',
           isLight: type.isLight || false,
           isTransparent: type.isTransparent || false,
           key,

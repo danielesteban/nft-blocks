@@ -16,11 +16,14 @@
   $: typeTextures = $textures[$editor];
 
   let texture = 'top';
+  $: if (type.model === 'cross' && texture !== 'top') {
+    texture = 'top';
+  }
   $: pixels = typeTextures[texture];
 
   const mesh = new Block();
   $: mesh.updateTextures(typeTextures);
-  $: mesh.updateType(type.isTransparent);
+  $: mesh.updateType(type);
 
   let controls;
   let scene;
@@ -60,6 +63,21 @@
   <block>
     <modifiers>
       <label>
+        Model:
+        <!-- svelte-ignore a11y-no-onchange -->
+        <select
+          value={type.model}
+          on:change={({ target: { value }}) => { types.update($editor, 'model', value); }}
+        >
+          <option value="box">
+            Box
+          </option>
+          <option value="cross">
+            Cross
+          </option>
+        </select>
+      </label>
+      <label>
         <input
           type="checkbox"
           checked={type.isLight}
@@ -97,12 +115,14 @@
         Top Texture  
       </tab>
       <tab
+        class:disabled={type.model === 'cross'}
         class:selected={texture === 'side'}
         on:click={() => { texture = 'side'; }}
       >
         Side Texture  
       </tab>
       <tab
+        class:disabled={type.model === 'cross'}
         class:selected={texture === 'bottom'}
         on:click={() => { texture = 'bottom'; }}
       >
@@ -164,9 +184,14 @@
     cursor: pointer;
   }
 
-  tab.selected {
-    background: #333;
+  tab.disabled {
+    color: #666;
     cursor: default;
+  }
+
+  tab.selected {
+    cursor: default;
+    background: #333;
   }
 
   texture {
