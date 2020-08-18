@@ -21,6 +21,17 @@
       });
   };
 
+  const onLoad = () => blocks.load();
+
+  const onSave = () => blocks.save('blocks');
+
+  const onReset = (type) => {
+    if (!confirm('Are you sure?')) {
+      return;
+    }
+    blocks.reset();
+  };
+
   const networkId = __NetworkId__;
   const networkNames = {
     1: 'Main Ethereum Network',
@@ -60,14 +71,14 @@
   {/if}
 </minting>
 <tools>
-  <button on:click={() => blocks.load()}>
+  <button on:click={onLoad}>
     Import
   </button>
-  <button on:click={() => blocks.save()}>
+  <button on:click={onSave}>
     Export
   </button>
-  <button on:click={() => blocks.gltf(true)}>
-    Download GLTF
+  <button on:click={onReset}>
+    Reset
   </button>
 </tools>
 

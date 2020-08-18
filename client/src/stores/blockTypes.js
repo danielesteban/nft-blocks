@@ -40,11 +40,18 @@ const generateDefaultTextures = () => ({
   top: defaultTexture(),
 });
 
+const defaultTypes = [
+  {
+    name: 'Default block',
+  },
+];
+
 export default () => {
   let createTextures;
   let cloneTextures;
   let removeTextures;
   let deserializeTextures;
+  let resetTextures;
   let updateAtlas;
   const textures = (() => {
     const { subscribe, set, update } = writable([]);
@@ -71,6 +78,9 @@ export default () => {
         return textures;
       }, {})));
       updateAtlas();
+    };
+    resetTextures = () => {
+      set([]);
     };
     return {
       subscribe,
@@ -151,6 +161,14 @@ export default () => {
           }, {}),
         }));
       },
+      reset() {
+        key = 1;
+        set([]);
+        resetTextures();
+        defaultTypes.forEach((type) => (
+          types.create(type)
+        ));
+      },
     };
   })();
   const atlas = (() => {
@@ -208,12 +226,6 @@ export default () => {
       subscribe,
     };
   })();
-  [
-    {
-      name: 'Default block',
-    },
-  ].forEach((type) => (
-    types.create(type)
-  ));
+  types.reset();
   return { atlas, types, textures };
 };

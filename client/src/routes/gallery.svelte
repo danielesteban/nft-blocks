@@ -4,7 +4,7 @@
   import Token from '../components/token.svelte';
   import Welcome from '../components/welcome.svelte';
 
-  $: !$list && list.fetch();
+  $: !$list && list.fetch().catch(() => {});
 </script>
 
 <gallery>

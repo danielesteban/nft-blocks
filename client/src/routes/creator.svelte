@@ -1,5 +1,4 @@
 <script>
-  import { writable } from 'svelte/store';
   import Blocks from '../components/blocks.svelte';
   import BlockTypes from '../components/blockTypes.svelte';
   import Editor from '../components/editor.svelte';
@@ -50,6 +49,7 @@
         bind:this={blocks}
         bind:selected={selected}
         atlas={atlas}
+        editor={editor}
         types={types}
       />
     </renderer>

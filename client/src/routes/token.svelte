@@ -31,46 +31,19 @@
   let isAR = false;
   let isVR = false;
 
-  const onDragOver = (e) => e.preventDefault();
-
-  const onDrop = (e) => {
-    e.preventDefault();
-    const [file] = e.dataTransfer.files;
-    if (file && file.name.lastIndexOf('.glb') === file.name.length - 4) {
-      isLoading = true;
-      if (tokenId) {
-        router.push('/token');
-      }
-      const reader = new FileReader();
-      reader.onload = () => {
-        loader.parse(reader.result, '', onLoad);
-      };
-      reader.readAsArrayBuffer(file);
-    }
-  };
-
   const load = (hash) => {
     isLoading = true;
-    loader.load(`${__IPFS__}${hash}`, onLoad);
+    loader.load(`${__IPFS__}${hash}`, (gltf) => {
+      const { player } = scene;
+      if (model) {
+        scene.remove(model);
+      }
+      model = gltf.scene;
+      scene.add(model);
+      isLoading = false;
+      resetView();
+    });
   };
-
-  $: tokenId = $status !== 'loading' && params && params[0];
-  $: hash = tokenId && $hashes[tokenId];
-  $: tokenId && !hash && hashes.fetch(tokenId);
-  $: hash && load(hash);
-
-  $: creator = tokenId && $creators[tokenId];
-  $: tokenId && !creator && creators.fetch(tokenId);
-  $: owner = tokenId && $owners[tokenId];
-  $: tokenId && !owner && owners.fetch(tokenId);
-  $: formattedId = tokenId && `#${(`000000${tokenId}`).slice(-Math.max(`${tokenId}`.length, 6))}`;
-  $: formattedCreator = creator && `${creator.slice(0, 6).toUpperCase()}`;
-  $: formattedOwner = owner && `${owner.slice(0, 6).toUpperCase()}`;
-
-  const openseaLink = (__NetworkId__ === '1' || __NetworkId__ === '4') && (
-    `https://${__NetworkId__ === '4' ? 'rinkeby.' : ''}opensea.io/assets/${__TokensAddress__}/{id}`
-  );
-  $: opensea = openseaLink && tokenId && openseaLink.replace(/{id}/, tokenId);
 
   const resetView = () => {
     const { player } = scene;
@@ -87,17 +60,6 @@
       player.position.y -= 1.6;
     }
     player.position.z = bounds.max.z + offset;
-  };
-
-  const onLoad = (gltf) => {
-    const { player } = scene;
-    if (model) {
-      scene.remove(model);
-    }
-    model = gltf.scene;
-    scene.add(model);
-    isLoading = false;
-    resetView();
   };
 
   const onEnterAR = () => {
@@ -117,9 +79,26 @@
   const onExitVR = () => {
     isVR = false;
   };
-</script>
 
-<svelte:window on:dragover={onDragOver} on:drop={onDrop} />
+  $: (!params || !params[0]) && router.replace('/');
+  $: tokenId = $status !== 'loading' && params[0];
+  $: hash = tokenId && $hashes[tokenId];
+  $: tokenId && !hash && hashes.fetch(tokenId).catch(() => router.replace('/'));
+  $: hash && load(hash);
+
+  $: creator = tokenId && $creators[tokenId];
+  $: tokenId && !creator && creators.fetch(tokenId).catch(() => {});
+  $: owner = tokenId && $owners[tokenId];
+  $: tokenId && !owner && owners.fetch(tokenId).catch(() => {});
+  $: formattedId = tokenId && `#${(`000000${tokenId}`).slice(-Math.max(`${tokenId}`.length, 6))}`;
+  $: formattedCreator = creator && `${creator.slice(0, 6).toUpperCase()}`;
+  $: formattedOwner = owner && `${owner.slice(0, 6).toUpperCase()}`;
+
+  const openseaLink = (__NetworkId__ === '1' || __NetworkId__ === '4') && (
+    `https://${__NetworkId__ === '4' ? 'rinkeby.' : ''}opensea.io/assets/${__TokensAddress__}/{id}`
+  );
+  $: opensea = openseaLink && tokenId && openseaLink.replace(/{id}/, tokenId);
+</script>
 
 <token>
   <viewport>

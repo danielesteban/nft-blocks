@@ -891,6 +891,11 @@ context.addEventListener('message', ({ data: message }) => {
         }),
       });
       break;
+    case 'reset':
+      chunks.clear();
+      meshedChunks.clear();
+      types = undefined;
+      break;
     default:
       break;
   }

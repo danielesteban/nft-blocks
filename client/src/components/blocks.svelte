@@ -8,6 +8,7 @@
   import Voxels from '../renderables/voxels';
 
   export let atlas;
+  export let editor;
   export let selected;
   export let types;
 
@@ -86,6 +87,8 @@
           return;
         }
         types.deserialize(serialized.types);
+        editor.close();
+        selected = 0;
         sunlight = serialized.sunlight;
         worker.postMessage({
           type: 'load',
@@ -104,15 +107,15 @@
 
   let saving;
   const onSave = (chunks) => {
-    const blob = new Blob([JSON.stringify({
+    const serialized = JSON.stringify({
       types: types.serialize(),
       chunks,
       sunlight,
-    })], { type: 'application/json' });
-    saving.forEach((resolve) => resolve(blob));
-    saving = false;
+    });
+    saving.forEach((resolve) => resolve(serialized));
+    saving = undefined;
   };
-  export const save = (name = 'blocks') => new Promise((resolve) => {
+  export const save = (download) => new Promise((resolve) => {
     if (saving) {
       saving.push(resolve);
       return;
@@ -122,11 +125,24 @@
       type: 'save',
     });
   })
-    .then((blob) => {
-      downloader.download = `${name}.json`;
-      downloader.href = URL.createObjectURL(blob);
-      downloader.click();
+    .then((serialized) => {
+      if (download) {
+        downloader.download = `${download}.json`;
+        downloader.href = URL.createObjectURL(new Blob([serialized], { type: 'application/json' }));
+        downloader.click();
+      }
+      return serialized;
     });
+
+  export const reset = () => {
+    types.reset();
+    editor.open(0);
+    selected = 0;
+    sunlight = 0.5;
+    worker.postMessage({
+      type: 'reset',
+    });
+  };
 
   const exporter = new GLTFExporter();
   export const gltf = (download) => {
