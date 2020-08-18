@@ -63,7 +63,7 @@
   $: tokenId && !creator && creators.fetch(tokenId);
   $: owner = tokenId && $owners[tokenId];
   $: tokenId && !owner && owners.fetch(tokenId);
-  $: formattedId = tokenId && `#${(`000000${tokenId}`).slice(-6)}`;
+  $: formattedId = tokenId && `#${(`000000${tokenId}`).slice(-Math.max(`${tokenId}`.length, 6))}`;
   $: formattedCreator = creator && `${creator.slice(0, 6).toUpperCase()}`;
   $: formattedOwner = owner && `${owner.slice(0, 6).toUpperCase()}`;
 

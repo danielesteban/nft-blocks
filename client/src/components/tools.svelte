@@ -11,8 +11,10 @@
       .then((blob) => (
         mint(blob)
       ))
-      .then((tokenId) => (
-        router.push(`/token/${tokenId}`)
+      .then((id) => (
+        blocks
+          .save(`Blocks #${(`000000${id}`).slice(-Math.max(`${id}`.length, 6))}`)
+          .then(() => router.push(`/token/${id}`))
       ))
       .catch(() => {
         isMinting = false;
@@ -58,10 +60,10 @@
   {/if}
 </minting>
 <tools>
-  <button on:click={blocks.load}>
+  <button on:click={() => blocks.load()}>
     Import
   </button>
-  <button on:click={blocks.save}>
+  <button on:click={() => blocks.save()}>
     Export
   </button>
   <button on:click={() => blocks.gltf(true)}>

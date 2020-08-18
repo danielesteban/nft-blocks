@@ -101,20 +101,32 @@
   const downloader = document.createElement('a');
   downloader.style.display = 'none';
   document.body.appendChild(downloader);
+
+  let saving;
   const onSave = (chunks) => {
-    downloader.href = URL.createObjectURL(new Blob([JSON.stringify({
+    const blob = new Blob([JSON.stringify({
       types: types.serialize(),
       chunks,
       sunlight,
-    })], { type: 'application/json' }));
-    downloader.download = 'blocks.json';
-    downloader.click();
+    })], { type: 'application/json' });
+    saving.forEach((resolve) => resolve(blob));
+    saving = false;
   };
-  export const save = () => (
+  export const save = (name = 'blocks') => new Promise((resolve) => {
+    if (saving) {
+      saving.push(resolve);
+      return;
+    }
+    saving = [resolve];
     worker.postMessage({
       type: 'save',
-    })
-  );
+    });
+  })
+    .then((blob) => {
+      downloader.download = `${name}.json`;
+      downloader.href = URL.createObjectURL(blob);
+      downloader.click();
+    });
 
   const exporter = new GLTFExporter();
   export const gltf = (download) => {

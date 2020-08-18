@@ -26,7 +26,7 @@ app.get('/token/:id', (req, res) => {
     html = html
       .replace(
         '<meta property="og:title" content="nft-blocks" />',
-        `<meta property="og:title" content="Blocks #${(`000000${id}`).slice(-6)}" />`
+        `<meta property="og:title" content="Blocks #${(`000000${id}`).slice(-Math.max(`${id}`.length, 6))}" />`
       )
       .replace(
         '<meta property="og:image" content="https://nftblocks.gatunes.com/screenshot.png" />',
