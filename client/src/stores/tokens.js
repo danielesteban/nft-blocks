@@ -224,8 +224,10 @@ export const mint = (gltf) => {
           }
           return res.json();
         })
-        .then((hash) => (
-          contract.mintingCost()
+        .then((hash) => {
+          fetch(`${__IPFS__}${hash}`).catch(() => {});
+          return contract
+            .mintingCost()
             .then((value) => {
               isMinting.set(true);
               return contract.mint(hash, { from: account, value })
@@ -234,7 +236,7 @@ export const mint = (gltf) => {
                   return tokenId.toString();
                 })
                 .finally(() => isMinting.set(false));
-            })
-        ));
+            });
+        });
     });
 };
