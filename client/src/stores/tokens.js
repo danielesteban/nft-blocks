@@ -138,7 +138,7 @@ export const list = (() => {
     subscribe,
     fetch: (account) => {
       set();
-      (contract ? (
+      return (contract ? (
         (account ? (
           contract.balanceOf(account)
         ) : (
